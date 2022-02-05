@@ -1,4 +1,4 @@
-# Digital-signal-processig
+# Digital-signal-processing
 This repository includes all work done about DSP course, taken in Facultad de Ciencias Exactas Físicas y Naturales (Córdoba, Argentina).
 ## Contents
 1. TP1: ADC and DAC usage in FRDM K64F board.
