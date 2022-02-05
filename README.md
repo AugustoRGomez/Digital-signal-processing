@@ -4,7 +4,7 @@ This repository includes all work done about DSP course, taken in Facultad de Ci
 1. TP1: ADC and DAC usage in FRDM K64F board.
 2. TP2: FIR filter design and implementation in FRDM K64F board.
 3. TP3: FFT implementation in FRDM K64F board.
-4. TP4: LMS adaptative filtering in FRDM K64F board.
+4. TP4 (Two parts): LMS adaptative filtering in FRDM K64F board.
 5. Final course proyect.
 ## Recommended bibliography
 + **Orfanidis, Sophocles**- Introduction to Signal Processing.
