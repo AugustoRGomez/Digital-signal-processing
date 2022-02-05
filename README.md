@@ -7,6 +7,7 @@ This repository includes all work done about DSP course, taken in Facultad de Ci
 4. TP4: LMS adaptative filtering in FRDM K64F board.
 5. Final course proyect.
 ## Recommended bibliography
++ **Orfanidis, Sophocles**- Introduction to Signal Processing.
 + **Reay, Donald**-Digital Signal Prosessing Unsing The ARM Cortex M4.
 + **Yiu, Joseph**-The Definitive Guide to ARM Cortex M3 and Cortex M4 Processors.
 + FRDM K64F User Manual.
