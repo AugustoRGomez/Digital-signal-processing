@@ -1,0 +1,10 @@
+freemaster_appcmd.c:56:6:FMSTR_InitAppCmds	16	static
+freemaster_appcmd.c:83:12:FMSTR_StoreAppCmd	40	static
+freemaster_appcmd.c:145:12:FMSTR_GetAppCmdStatus	24	static
+freemaster_appcmd.c:187:12:FMSTR_GetAppCmdRespData	32	static
+freemaster_appcmd.c:244:20:FMSTR_FindAppCmdCallIndex	24	static
+freemaster_appcmd.c:273:6:FMSTR_AppCmdAck	16	static
+freemaster_appcmd.c:291:6:FMSTR_AppCmdSetResponseData	24	static
+freemaster_appcmd.c:326:19:FMSTR_GetAppCmd	8	static
+freemaster_appcmd.c:350:20:FMSTR_GetAppCmdData	16	static
+freemaster_appcmd.c:387:12:FMSTR_RegisterAppCmdCall	24	static

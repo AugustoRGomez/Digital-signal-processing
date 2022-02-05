@@ -1,0 +1,7 @@
+core_cm4.h:1679:22:__NVIC_EnableIRQ	16	static
+fsl_common.h:484:28:EnableIRQ	16	static
+peripherals.c:65:13:GPIOA_init	8	static
+peripherals.c:96:13:GPIOC_init	8	static
+peripherals.c:158:13:UART0_init	8	static
+peripherals.c:168:6:BOARD_InitPeripherals	8	static
+peripherals.c:179:6:BOARD_InitBootPeripherals	8	static

@@ -1,0 +1,16 @@
+C:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_1\drivers/fsl_common_arm.h:568:24:DisableGlobalIRQ	16	static
+C:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_1\drivers/fsl_common_arm.h:595:20:EnableGlobalIRQ	24	static
+../component/serial_manager/fsl_component_serial_manager.c:384:32:SerialManager_StartWriting	32	static
+../component/serial_manager/fsl_component_serial_manager.c:432:32:SerialManager_StartReading	32	static
+../component/serial_manager/fsl_component_serial_manager.c:1042:32:SerialManager_Write	32	static
+../component/serial_manager/fsl_component_serial_manager.c:1059:32:SerialManager_Read	32	static
+../component/serial_manager/fsl_component_serial_manager.c:1077:25:SerialManager_Init	24	static
+../component/serial_manager/fsl_component_serial_manager.c:1228:25:SerialManager_Deinit	32	static
+../component/serial_manager/fsl_component_serial_manager.c:1295:25:SerialManager_OpenWriteHandle	32	static
+../component/serial_manager/fsl_component_serial_manager.c:1332:25:SerialManager_CloseWriteHandle	32	static
+../component/serial_manager/fsl_component_serial_manager.c:1363:25:SerialManager_OpenReadHandle	32	static
+../component/serial_manager/fsl_component_serial_manager.c:1403:25:SerialManager_CloseReadHandle	32	static
+../component/serial_manager/fsl_component_serial_manager.c:1432:25:SerialManager_WriteBlocking	24	static
+../component/serial_manager/fsl_component_serial_manager.c:1441:25:SerialManager_ReadBlocking	24	static
+../component/serial_manager/fsl_component_serial_manager.c:1657:25:SerialManager_EnterLowpower	24	static
+../component/serial_manager/fsl_component_serial_manager.c:1696:25:SerialManager_ExitLowpower	24	static

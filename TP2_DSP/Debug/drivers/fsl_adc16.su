@@ -1,0 +1,14 @@
+fsl_clock.h:668:20:CLOCK_EnableClock	24	static
+fsl_clock.h:679:20:CLOCK_DisableClock	24	static
+fsl_adc16.c:40:17:ADC16_GetInstance	24	static
+fsl_adc16.c:64:6:ADC16_Init	24	static
+fsl_adc16.c:125:6:ADC16_Deinit	16	static
+fsl_adc16.c:151:6:ADC16_GetDefaultConfig	16	static
+fsl_adc16.c:183:10:ADC16_DoAutoCalibration	32	static
+fsl_adc16.c:260:6:ADC16_SetChannelMuxMode	16	static
+fsl_adc16.c:285:6:ADC16_SetHardwareCompareConfig	24	static
+fsl_adc16.c:333:6:ADC16_SetHardwareAverage	24	static
+fsl_adc16.c:393:10:ADC16_GetStatusFlags	24	static
+fsl_adc16.c:416:6:ADC16_ClearStatusFlags	16	static
+fsl_adc16.c:453:6:ADC16_SetChannelConfig	32	static
+fsl_adc16.c:483:10:ADC16_GetChannelStatusFlags	24	static

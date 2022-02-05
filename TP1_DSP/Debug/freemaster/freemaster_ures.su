@@ -1,0 +1,4 @@
+freemaster_ures.c:46:12:FMSTR_UresControl	48	static
+freemaster_ures.c:104:19:_FMSTR_UresControlRead	72	static
+freemaster_ures.c:197:19:_FMSTR_UresControlWrite	72	static
+freemaster_ures.c:271:19:_FMSTR_UresControlIoctl	80	static

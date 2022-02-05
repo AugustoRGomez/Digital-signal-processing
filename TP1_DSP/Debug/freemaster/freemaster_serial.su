@@ -1,0 +1,8 @@
+freemaster_serial.c:180:6:FMSTR_ProcessSerial	16	static
+freemaster_serial.c:261:13:_FMSTR_Listen	8	static
+freemaster_serial.c:296:13:_FMSTR_SendError	16	static
+freemaster_serial.c:314:13:_FMSTR_SerialSendResponse	32	static
+freemaster_serial.c:392:19:_FMSTR_Tx	16	static
+freemaster_serial.c:432:19:_FMSTR_Rx	32	static
+freemaster_serial.c:556:19:_FMSTR_SerialInit	8	static
+freemaster_serial.c:624:13:_FMSTR_SerialPoll	8	static

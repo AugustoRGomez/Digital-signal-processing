@@ -1,0 +1,15 @@
+fsl_clock.h:668:20:CLOCK_EnableClock	24	static
+fsl_clock.h:679:20:CLOCK_DisableClock	24	static
+fsl_dac.h:187:20:DAC_Enable	16	static
+fsl_dac.c:39:17:DAC_GetInstance	24	static
+fsl_dac.c:68:6:DAC_Init	24	static
+fsl_dac.c:105:6:DAC_Deinit	16	static
+fsl_dac.c:125:6:DAC_GetDefaultConfig	16	static
+fsl_dac.c:142:6:DAC_SetBufferConfig	24	static
+fsl_dac.c:187:6:DAC_GetDefaultBufferConfig	16	static
+fsl_dac.c:210:6:DAC_SetBufferValue	16	static
+fsl_dac.c:228:6:DAC_SetBufferReadPointer	24	static
+fsl_dac.c:244:6:DAC_EnableBufferInterrupts	16	static
+fsl_dac.c:260:6:DAC_DisableBufferInterrupts	16	static
+fsl_dac.c:277:9:DAC_GetBufferStatusFlags	16	static
+fsl_dac.c:292:6:DAC_ClearBufferStatusFlags	16	static

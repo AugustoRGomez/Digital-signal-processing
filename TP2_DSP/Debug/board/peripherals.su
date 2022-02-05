@@ -1,0 +1,12 @@
+core_cm4.h:1679:22:__NVIC_EnableIRQ	16	static
+fsl_common.h:484:28:EnableIRQ	16	static
+fsl_dac.h:187:20:DAC_Enable	16	static
+fsl_pit.h:159:20:PIT_EnableInterrupts	24	static
+fsl_pit.h:246:20:PIT_SetTimerPeriod	24	static
+peripherals.c:68:13:DAC0_init	8	static
+peripherals.c:104:13:GPIOA_init	8	static
+peripherals.c:135:13:GPIOC_init	8	static
+peripherals.c:180:13:PIT_init	24	static
+peripherals.c:230:13:UART0_init	8	static
+peripherals.c:237:6:BOARD_InitPeripherals	8	static
+peripherals.c:250:6:BOARD_InitBootPeripherals	8	static

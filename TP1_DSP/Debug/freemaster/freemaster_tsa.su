@@ -1,0 +1,10 @@
+freemaster_tsa.c:51:6:FMSTR_InitTsa	4	static
+freemaster_tsa.c:66:12:FMSTR_SetUpTsaBuff	24	static
+freemaster_tsa.c:94:1:FMSTR_TsaGetTable_dynamic_tsa	16	static
+freemaster_tsa.c:108:12:FMSTR_TsaAddVar	40	static
+freemaster_tsa.c:163:12:FMSTR_GetTsaInfo	40	static
+freemaster_tsa.c:219:12:FMSTR_GetStringLen	32	static
+freemaster_tsa.c:258:19:FMSTR_CheckMemSpace	32	static
+freemaster_tsa.c:290:12:FMSTR_CheckTsaSpace	56	static
+freemaster_tsa.c:393:19:_FMSTR_IsMemoryMapped	16	static
+freemaster_tsa.c:405:25:FMSTR_FindUresInTsa	32	static

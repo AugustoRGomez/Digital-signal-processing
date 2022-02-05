@@ -1,0 +1,14 @@
+fsl_common.h:552:28:DisableGlobalIRQ	16	static
+fsl_common.h:583:24:EnableGlobalIRQ	24	static
+button.c:115:13:BUTTON_NotificationUpdate	16	static
+button.c:134:13:BUTTON_Event	24	static
+button.c:187:13:BUTTON_Task	32	static
+button.c:232:13:BUTTON_TimerEvent	24	static
+button.c:262:13:BUTTON_OpenTimer	24	static
+button.c:285:13:BUTTON_CloseTimer	24	static
+button.c:307:17:BUTTON_Init	32	static
+button.c:367:17:BUTTON_InstallCallback	32	static
+button.c:382:17:BUTTON_Deinit	32	static
+button.c:431:17:BUTTON_WakeUpSetting	24	static
+button.c:449:17:BUTTON_EnterLowpower	24	static
+button.c:470:17:BUTTON_ExitLowpower	24	static

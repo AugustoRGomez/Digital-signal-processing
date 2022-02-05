@@ -1,0 +1,4 @@
+freemaster_sha.c:46:13:FMSTR_Sha1Transform	16	static
+freemaster_sha.c:113:6:FMSTR_Sha1Init	16	static
+freemaster_sha.c:128:6:FMSTR_Sha1Update	40	static
+freemaster_sha.c:143:6:FMSTR_Sha1Final	32	static

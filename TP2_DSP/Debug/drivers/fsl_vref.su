@@ -1,0 +1,7 @@
+fsl_clock.h:668:20:CLOCK_EnableClock	24	static
+fsl_clock.h:679:20:CLOCK_DisableClock	24	static
+fsl_vref.c:45:17:VREF_GetInstance	24	static
+fsl_vref.c:82:6:VREF_Init	24	static
+fsl_vref.c:163:6:VREF_Deinit	16	static
+fsl_vref.c:184:6:VREF_GetDefaultConfig	16	static
+fsl_vref.c:220:6:VREF_SetTrimVal	24	static

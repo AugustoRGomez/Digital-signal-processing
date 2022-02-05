@@ -1,0 +1,2 @@
+fsl_debug_console.h:134:24:DbgConsole_Init	24	static
+board.c:17:6:BOARD_InitDebugConsole	16	static

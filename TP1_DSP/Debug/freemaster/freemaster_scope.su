@@ -1,0 +1,5 @@
+freemaster_scope.c:65:6:FMSTR_InitScope	8	static
+freemaster_scope.c:81:17:_FMSTR_SetScope_CFGMEM	24	static
+freemaster_scope.c:108:17:_FMSTR_SetScope_CFGVAR	40	static
+freemaster_scope.c:160:12:FMSTR_SetScope	40	static
+freemaster_scope.c:231:12:FMSTR_ReadScope	40	static

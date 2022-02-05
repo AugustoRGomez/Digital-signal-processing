@@ -1,0 +1,8 @@
+fsl_gpio.h:182:20:GPIO_PortSet	16	static
+fsl_gpio.h:193:20:GPIO_PortClear	16	static
+TP3_DSP.c:70:6:enviarDatos	24	static
+TP3_DSP.c:87:6:mostrarRate	8	static
+TP3_DSP.c:116:6:PORTA_IRQHandler	16	static
+TP3_DSP.c:135:6:PORTC_IRQHandler	16	static
+TP3_DSP.c:153:6:UART0_RX_TX_IRQHandler	16	static
+TP3_DSP.c:184:5:main	1048	static
