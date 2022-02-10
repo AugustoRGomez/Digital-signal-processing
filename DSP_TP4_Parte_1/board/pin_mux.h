@@ -25,6 +25,10 @@ extern "C" {
  */
 void BOARD_InitBootPins(void);
 
+/*! @name DAC0_OUT (number 27), J4[11]
+  @{ */
+/* @} */
+
 /*!
  * @brief Configures pin routing and optionally pin electrical features.
  *

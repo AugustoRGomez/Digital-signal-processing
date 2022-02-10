@@ -1,6 +1,6 @@
 /*
  *	LMS Adaptative Filter
- *	Signal prediction
+ *	Plant identification
  *	Pagina 287- DSP_CORTEX_M4
  *	DAC: J4-11
 */
@@ -13,9 +13,7 @@
 #include "MK64F12.h"
 #include "fsl_debug_console.h"
 #include "arm_math.h"
-#include "f_imp_q15.h"
 #include "planta_fir.h"
-#include "prbs_gen.h" //borrar
 
 /*
  * Algunos valores de MU en formato q15
@@ -31,7 +29,7 @@
 #define HALF_RANGE_UINT_16 32767U
 #define NUMTAPS 30U
 #define BLOCKSIZE 1U
-#define MU 0x0666
+#define MU 0x4000
 #define SAMPLES_NUM 256U
 #define SAMPLES_PERIOD 100U
 #define INPUT_POWER 3U //hasta 15 -> minimo valor no nulo 3 9 12 15

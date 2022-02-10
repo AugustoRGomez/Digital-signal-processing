@@ -28,7 +28,7 @@ source/DSP_TP4_Parte_1.o source/DSP_TP4_Parte_1.d: \
  C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_1\component\uart/fsl_adapter_uart.h \
  C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_1\CMSIS\DSP\Include/arm_math.h \
  C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_1\CMSIS/cmsis_compiler.h \
- ../source/f_imp_q15.h ../source/planta_fir.h ../source/prbs_gen.h
+ ../source/planta_fir.h
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_1\board/board.h:
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_1\board/clock_config.h:
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_1\drivers/fsl_common.h:
@@ -57,6 +57,4 @@ C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_1\co
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_1\component\uart/fsl_adapter_uart.h:
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_1\CMSIS\DSP\Include/arm_math.h:
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_1\CMSIS/cmsis_compiler.h:
-../source/f_imp_q15.h:
 ../source/planta_fir.h:
-../source/prbs_gen.h:
