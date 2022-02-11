@@ -14,7 +14,7 @@
 #include "fsl_debug_console.h"
 #include "arm_math.h"
 #include "planta_fir.h"
-
+#include <math.h>
 
 /*
  * Algunos valores de MU en formato q15
@@ -26,19 +26,19 @@
  * 0.001 -> 0x0020
  */
 
-#define OUT_REF //DAC: OUT_ERROR, OUT_REF, OUT_LMS
+#define OUT_ERROR //DAC: OUT_ERROR, OUT_REF, OUT_LMS, OUT_FIR
 #define HALF_RANGE_UINT_16 32767U
 #define NUMTAPS 30U
 #define BLOCKSIZE 1U
-#define MU 0x4000
+#define MU 0x0147
 #define SAMPLES_NUM 256U
 #define SAMPLES_PERIOD 100U
-#define INPUT_POWER 3U //hasta 15 -> minimo valor no nulo 3 9 12 15
+#define INPUT_POWER 1U //hasta 15 -> minimo valor no nulo 3 9 12 15
 
 //Sine Wave
 #define FREQ 700
 #define SR 8000
-#define SINE_BUFF_LEN 512
+#define SINE_BUFF_LEN 12 //SR/FREQ
 
 q15_t inBuff[BLOCKSIZE];
 q15_t refBuff[BLOCKSIZE];
@@ -53,8 +53,8 @@ q15_t firState[NUMTAPS + BLOCKSIZE];
 q15_t firOutBuff[BLOCKSIZE];
 q15_t *pFirOut = firOutBuff;
 
-float32_t inSignalF32[512];
-q15_t inSignalQ15[512];
+float32_t inSignalF32[SINE_BUFF_LEN];
+q15_t inSignalQ15[SINE_BUFF_LEN];
 
 arm_lms_instance_q15 lms_instance;
 arm_fir_instance_q15 fir_instance;
@@ -80,44 +80,44 @@ int main(void) {
     arm_fir_init_q15(&fir_instance, NUMTAPS, planta_fir, firState, BLOCKSIZE);
     PIT_StartTimer(PIT_PERIPHERAL, PIT_CHANNEL_0);
 
-    //Sine Wave generation
+    //Sine Wave table generation
     for(int i=0; i<SINE_BUFF_LEN; i++) {
 		inSignalF32[i] = 0.5f * sinf(2.0f * PI * FREQ * i / SR);
 		inSignalQ15[i] = (q15_t) (32768.0f * inSignalF32[i]);
     }
 
-    while (1) {
-    	q15_t rndVal = ((q15_t) rand()) >> INPUT_POWER;
-    	q15_t signalNoise = inSignalQ15[samplesCnt] + rndVal;
-
-    	arm_fir_q15(&fir_instance, &rndVal, firOutBuff, BLOCKSIZE);
-    	arm_lms_q15(&lms_instance, firOutBuff, &signalNoise, outBuff, errBuff, BLOCKSIZE);
-
-    	if(samplesCnt == 511)
-    		samplesCnt = 0;
-    	else
-    		samplesCnt++;
-    }
+    while (1) {}
 
     return 0 ;
 }
 
-//CH0 de PIT usado para controlar la tasa de actualización del DAC (opcional)
+/* CH0 de PIT usado para controlar la tasa de actualización del DAC */
 void PIT_CHANNEL_0_IRQHANDLER(void) {
 	uint32_t intStatus;
 	/* Reading all interrupt flags of status register */
 	intStatus = PIT_GetStatusFlags(PIT_PERIPHERAL, PIT_CHANNEL_0);
 	PIT_ClearStatusFlags(PIT_PERIPHERAL, PIT_CHANNEL_0, intStatus);
 
-	/* La función DAC_setBufferValue toma los 12 bits menos significativos,
+	/* Processing */
+	q15_t rndVal = ((q15_t) rand()) >> INPUT_POWER;
+	q15_t signalNoise = inSignalQ15[samplesCnt] + rndVal;
+
+	arm_fir_q15(&fir_instance, &rndVal, firOutBuff, BLOCKSIZE);
+	arm_lms_q15(&lms_instance, firOutBuff, &signalNoise, outBuff, errBuff, BLOCKSIZE);
+
+	if(samplesCnt == SINE_BUFF_LEN-1)
+		samplesCnt = 0;
+	else
+		samplesCnt++;
+
+	/* DAC Output: La función DAC_setBufferValue toma los 12 bits menos significativos,
 	 * por eso se shiftea 4 veces para que incluya la parte más significativa */
 
 #ifdef OUT_REF
-	DAC_SetBufferValue(DAC0_PERIPHERAL, 0u, ((uint16_t) ((inSignalQ15[jj] + HALF_RANGE_UINT_16) >> 4)));
-	if(jj == SINE_BUFF_LEN-1)
-		jj = 0;
-	else
-		jj++;
+	DAC_SetBufferValue(DAC0_PERIPHERAL, 0u, ((uint16_t) ((inSignalQ15[samplesCnt] + HALF_RANGE_UINT_16) >> 4)));
+#endif
+#ifdef OUT_FIR
+	DAC_SetBufferValue(DAC0_PERIPHERAL, 0u, ((uint16_t) ((*pFirOut + HALF_RANGE_UINT_16) >> 4)));
 #endif
 #ifdef OUT_ERROR
 	DAC_SetBufferValue(DAC0_PERIPHERAL, 0u, ((uint16_t) ((*pErr + HALF_RANGE_UINT_16) >> 4)));

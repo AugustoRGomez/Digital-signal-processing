@@ -1,2 +1,9 @@
-../board/peripherals.c:44:6:BOARD_InitPeripherals	4	static
-../board/peripherals.c:51:6:BOARD_InitBootPeripherals	8	static
+C:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_2\CMSIS/core_cm4.h:1679:22:__NVIC_EnableIRQ	16	static
+C:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_2\drivers/fsl_common_arm.h:488:24:EnableIRQ	24	static
+C:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_2\drivers/fsl_dac.h:187:20:DAC_Enable	16	static
+C:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_2\drivers/fsl_pit.h:159:20:PIT_EnableInterrupts	24	static
+C:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_2\drivers/fsl_pit.h:246:20:PIT_SetTimerPeriod	24	static
+../board/peripherals.c:101:13:DAC0_init	8	static
+../board/peripherals.c:151:13:PIT_init	32	static
+../board/peripherals.c:165:6:BOARD_InitPeripherals	8	static
+../board/peripherals.c:175:6:BOARD_InitBootPeripherals	8	static
