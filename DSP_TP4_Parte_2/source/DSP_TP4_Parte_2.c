@@ -1,8 +1,9 @@
 /*
  *	LMS Adaptative Filter
- *	Signal prediction
+ *	Active Noise Cancellation
  *	Pagina 287- DSP_CORTEX_M4
- *	DAC: J4-11
+ *	Pines:
+ *		DAC: J4-11
 */
 
 #include <stdio.h>
@@ -20,13 +21,13 @@
  * Algunos valores de MU en formato q15
  * 0.5 -> 0x4000
  * 0.1 -> 0x0CCC
- * 0.05 -> 0x0666 best
+ * 0.05 -> 0x0666
  * 0.01 -> 0x0147
  * 0.005 -> 0x00A3
  * 0.001 -> 0x0020
  */
 
-#define OUT_ERROR //DAC: OUT_ERROR, OUT_REF, OUT_LMS, OUT_FIR
+#define OUT_LMS //que muestra el DAC: OUT_ERROR, OUT_REF, OUT_LMS, OUT_FIR, OUT_SN, OUT_NOISE
 #define HALF_RANGE_UINT_16 32767U
 #define NUMTAPS 30U
 #define BLOCKSIZE 1U
@@ -35,7 +36,6 @@
 #define SAMPLES_PERIOD 100U
 #define INPUT_POWER 1U //hasta 15 -> minimo valor no nulo 3 9 12 15
 
-//Sine Wave
 #define FREQ 700
 #define SR 8000
 #define SINE_BUFF_LEN 12 //SR/FREQ
@@ -59,12 +59,7 @@ q15_t inSignalQ15[SINE_BUFF_LEN];
 arm_lms_instance_q15 lms_instance;
 arm_fir_instance_q15 fir_instance;
 
-/* DEBUG VARIABLES */
-q15_t lmsCoeffArray[NUMTAPS][SAMPLES_NUM];
-q63_t mseArray[SAMPLES_NUM];
-q15_t acc[SAMPLES_PERIOD];
 int samplesCnt = 0;
-int jj = 0;
 
 int main(void) {
 	/* Init board hardware. */
@@ -99,7 +94,7 @@ void PIT_CHANNEL_0_IRQHANDLER(void) {
 	PIT_ClearStatusFlags(PIT_PERIPHERAL, PIT_CHANNEL_0, intStatus);
 
 	/* Processing */
-	q15_t rndVal = ((q15_t) rand()) >> INPUT_POWER;
+	q15_t rndVal = ((q15_t) rand()) >> INPUT_POWER; //divido por potencias de dos, limito la "amplitud" del ruido
 	q15_t signalNoise = inSignalQ15[samplesCnt] + rndVal;
 
 	arm_fir_q15(&fir_instance, &rndVal, firOutBuff, BLOCKSIZE);
@@ -112,7 +107,6 @@ void PIT_CHANNEL_0_IRQHANDLER(void) {
 
 	/* DAC Output: La función DAC_setBufferValue toma los 12 bits menos significativos,
 	 * por eso se shiftea 4 veces para que incluya la parte más significativa */
-
 #ifdef OUT_REF
 	DAC_SetBufferValue(DAC0_PERIPHERAL, 0u, ((uint16_t) ((inSignalQ15[samplesCnt] + HALF_RANGE_UINT_16) >> 4)));
 #endif
@@ -125,6 +119,13 @@ void PIT_CHANNEL_0_IRQHANDLER(void) {
 #ifdef OUT_LMS
 	DAC_SetBufferValue(DAC0_PERIPHERAL, 0u, ((uint16_t) ((*pOut + HALF_RANGE_UINT_16) >> 4)));
 #endif
+#ifdef OUT_SN
+	DAC_SetBufferValue(DAC0_PERIPHERAL, 0u, ((uint16_t) ((signalNoise + HALF_RANGE_UINT_16) >> 4)));
+#endif
+#ifdef OUT_NOISE
+	DAC_SetBufferValue(DAC0_PERIPHERAL, 0u, ((uint16_t) ((rndVal + HALF_RANGE_UINT_16) >> 4)));
+#endif
+
 
 	/* Add for ARM errata 838869, affects Cortex-M4, Cortex-M4F
 	 Store immediate overlapping exception return operation might vector to incorrect interrupt. */

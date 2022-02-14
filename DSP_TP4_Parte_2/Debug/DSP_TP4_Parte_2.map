@@ -316,13 +316,8 @@ Discarded input sections
  .bss           0x00000000        0x0 ./source/DSP_TP4_Parte_2.o
  .bss.inBuff    0x00000000        0x2 ./source/DSP_TP4_Parte_2.o
  .bss.refBuff   0x00000000        0x2 ./source/DSP_TP4_Parte_2.o
- .data.pOut     0x00000000        0x4 ./source/DSP_TP4_Parte_2.o
+ .data.pErr     0x00000000        0x4 ./source/DSP_TP4_Parte_2.o
  .data.pFirOut  0x00000000        0x4 ./source/DSP_TP4_Parte_2.o
- .bss.lmsCoeffArray
-                0x00000000     0x3c00 ./source/DSP_TP4_Parte_2.o
- .bss.mseArray  0x00000000      0x800 ./source/DSP_TP4_Parte_2.o
- .bss.acc       0x00000000       0xc8 ./source/DSP_TP4_Parte_2.o
- .bss.jj        0x00000000        0x4 ./source/DSP_TP4_Parte_2.o
  .debug_macro   0x00000000      0xaae ./source/DSP_TP4_Parte_2.o
  .debug_macro   0x00000000       0x10 ./source/DSP_TP4_Parte_2.o
  .debug_macro   0x00000000      0x12e ./source/DSP_TP4_Parte_2.o
@@ -4382,8 +4377,8 @@ END GROUP
  *(SORT_BY_ALIGNMENT(DataQuickAccess))
  *(SORT_BY_ALIGNMENT(RamFunction))
  *(SORT_BY_ALIGNMENT(.data*))
- .data.pErr     0x20000000        0x4 ./source/DSP_TP4_Parte_2.o
-                0x20000000                pErr
+ .data.pOut     0x20000000        0x4 ./source/DSP_TP4_Parte_2.o
+                0x20000000                pOut
  .data.s_slowIrcFreq
                 0x20000004        0x4 ./drivers/fsl_clock.o
  .data.s_fastIrcFreq
@@ -4564,45 +4559,45 @@ END GROUP
 OUTPUT(DSP_TP4_Parte_2.axf elf32-littlearm)
 LOAD linker stubs
 
-.debug_info     0x00000000    0x1c0d3
+.debug_info     0x00000000    0x1c03d
  .debug_info    0x00000000      0xb58 ./utilities/fsl_debug_console.o
  .debug_info    0x00000b58      0x93a ./startup/startup_mk64f12.o
- .debug_info    0x00001492      0x94f ./source/DSP_TP4_Parte_2.o
- .debug_info    0x00001de1       0x3c ./source/semihost_hardfault.o
- .debug_info    0x00001e1d     0x21ab ./drivers/fsl_clock.o
- .debug_info    0x00003fc8      0xa90 ./drivers/fsl_dac.o
- .debug_info    0x00004a58     0x1e7a ./drivers/fsl_i2c.o
- .debug_info    0x000068d2      0x759 ./drivers/fsl_pit.o
- .debug_info    0x0000702b     0x1f78 ./drivers/fsl_uart.o
- .debug_info    0x00008fa3      0x649 ./device/system_MK64F12.o
- .debug_info    0x000095ec      0xa66 ./component/uart/fsl_adapter_uart.o
- .debug_info    0x0000a052      0x8e1 ./component/serial_manager/fsl_component_serial_manager.o
- .debug_info    0x0000a933      0x46b ./component/serial_manager/fsl_component_serial_port_uart.o
- .debug_info    0x0000ad9e       0xd0 ./board/board.o
- .debug_info    0x0000ae6e      0xcb8 ./board/clock_config.o
- .debug_info    0x0000bb26      0xb77 ./board/peripherals.o
- .debug_info    0x0000c69d      0xc38 ./board/pin_mux.o
- .debug_info    0x0000d2d5     0xedfe ./CMSIS/DSP/Source/FilteringFunctions/FilteringFunctions.o
+ .debug_info    0x00001492      0x8b9 ./source/DSP_TP4_Parte_2.o
+ .debug_info    0x00001d4b       0x3c ./source/semihost_hardfault.o
+ .debug_info    0x00001d87     0x21ab ./drivers/fsl_clock.o
+ .debug_info    0x00003f32      0xa90 ./drivers/fsl_dac.o
+ .debug_info    0x000049c2     0x1e7a ./drivers/fsl_i2c.o
+ .debug_info    0x0000683c      0x759 ./drivers/fsl_pit.o
+ .debug_info    0x00006f95     0x1f78 ./drivers/fsl_uart.o
+ .debug_info    0x00008f0d      0x649 ./device/system_MK64F12.o
+ .debug_info    0x00009556      0xa66 ./component/uart/fsl_adapter_uart.o
+ .debug_info    0x00009fbc      0x8e1 ./component/serial_manager/fsl_component_serial_manager.o
+ .debug_info    0x0000a89d      0x46b ./component/serial_manager/fsl_component_serial_port_uart.o
+ .debug_info    0x0000ad08       0xd0 ./board/board.o
+ .debug_info    0x0000add8      0xcb8 ./board/clock_config.o
+ .debug_info    0x0000ba90      0xb77 ./board/peripherals.o
+ .debug_info    0x0000c607      0xc38 ./board/pin_mux.o
+ .debug_info    0x0000d23f     0xedfe ./CMSIS/DSP/Source/FilteringFunctions/FilteringFunctions.o
 
-.debug_abbrev   0x00000000     0x2644
+.debug_abbrev   0x00000000     0x2631
  .debug_abbrev  0x00000000      0x232 ./utilities/fsl_debug_console.o
  .debug_abbrev  0x00000232      0x185 ./startup/startup_mk64f12.o
- .debug_abbrev  0x000003b7      0x215 ./source/DSP_TP4_Parte_2.o
- .debug_abbrev  0x000005cc       0x31 ./source/semihost_hardfault.o
- .debug_abbrev  0x000005fd      0x359 ./drivers/fsl_clock.o
- .debug_abbrev  0x00000956      0x221 ./drivers/fsl_dac.o
- .debug_abbrev  0x00000b77      0x363 ./drivers/fsl_i2c.o
- .debug_abbrev  0x00000eda      0x1eb ./drivers/fsl_pit.o
- .debug_abbrev  0x000010c5      0x42e ./drivers/fsl_uart.o
- .debug_abbrev  0x000014f3      0x148 ./device/system_MK64F12.o
- .debug_abbrev  0x0000163b      0x1c9 ./component/uart/fsl_adapter_uart.o
- .debug_abbrev  0x00001804      0x23d ./component/serial_manager/fsl_component_serial_manager.o
- .debug_abbrev  0x00001a41      0x167 ./component/serial_manager/fsl_component_serial_port_uart.o
- .debug_abbrev  0x00001ba8       0x85 ./board/board.o
- .debug_abbrev  0x00001c2d      0x246 ./board/clock_config.o
- .debug_abbrev  0x00001e73      0x23f ./board/peripherals.o
- .debug_abbrev  0x000020b2      0x281 ./board/pin_mux.o
- .debug_abbrev  0x00002333      0x311 ./CMSIS/DSP/Source/FilteringFunctions/FilteringFunctions.o
+ .debug_abbrev  0x000003b7      0x202 ./source/DSP_TP4_Parte_2.o
+ .debug_abbrev  0x000005b9       0x31 ./source/semihost_hardfault.o
+ .debug_abbrev  0x000005ea      0x359 ./drivers/fsl_clock.o
+ .debug_abbrev  0x00000943      0x221 ./drivers/fsl_dac.o
+ .debug_abbrev  0x00000b64      0x363 ./drivers/fsl_i2c.o
+ .debug_abbrev  0x00000ec7      0x1eb ./drivers/fsl_pit.o
+ .debug_abbrev  0x000010b2      0x42e ./drivers/fsl_uart.o
+ .debug_abbrev  0x000014e0      0x148 ./device/system_MK64F12.o
+ .debug_abbrev  0x00001628      0x1c9 ./component/uart/fsl_adapter_uart.o
+ .debug_abbrev  0x000017f1      0x23d ./component/serial_manager/fsl_component_serial_manager.o
+ .debug_abbrev  0x00001a2e      0x167 ./component/serial_manager/fsl_component_serial_port_uart.o
+ .debug_abbrev  0x00001b95       0x85 ./board/board.o
+ .debug_abbrev  0x00001c1a      0x246 ./board/clock_config.o
+ .debug_abbrev  0x00001e60      0x23f ./board/peripherals.o
+ .debug_abbrev  0x0000209f      0x281 ./board/pin_mux.o
+ .debug_abbrev  0x00002320      0x311 ./CMSIS/DSP/Source/FilteringFunctions/FilteringFunctions.o
 
 .debug_aranges  0x00000000     0x1040
  .debug_aranges
@@ -4728,62 +4723,62 @@ LOAD linker stubs
  .debug_macro   0x00014386      0x127 ./board/pin_mux.o
  .debug_macro   0x000144ad      0x228 ./CMSIS/DSP/Source/FilteringFunctions/FilteringFunctions.o
 
-.debug_line     0x00000000    0x1415f
+.debug_line     0x00000000    0x1415e
  .debug_line    0x00000000      0x89c ./utilities/fsl_debug_console.o
  .debug_line    0x0000089c      0x911 ./startup/startup_mk64f12.o
- .debug_line    0x000011ad      0x778 ./source/DSP_TP4_Parte_2.o
- .debug_line    0x00001925       0x59 ./source/semihost_hardfault.o
- .debug_line    0x0000197e     0x14ea ./drivers/fsl_clock.o
- .debug_line    0x00002e68      0x5cd ./drivers/fsl_dac.o
- .debug_line    0x00003435     0x13d7 ./drivers/fsl_i2c.o
- .debug_line    0x0000480c      0x423 ./drivers/fsl_pit.o
- .debug_line    0x00004c2f     0x14c6 ./drivers/fsl_uart.o
- .debug_line    0x000060f5      0x3f1 ./device/system_MK64F12.o
- .debug_line    0x000064e6      0x542 ./component/uart/fsl_adapter_uart.o
- .debug_line    0x00006a28      0x7dc ./component/serial_manager/fsl_component_serial_manager.o
- .debug_line    0x00007204      0x595 ./component/serial_manager/fsl_component_serial_port_uart.o
- .debug_line    0x00007799      0x541 ./board/board.o
- .debug_line    0x00007cda      0x552 ./board/clock_config.o
- .debug_line    0x0000822c      0x4c8 ./board/peripherals.o
- .debug_line    0x000086f4      0x674 ./board/pin_mux.o
- .debug_line    0x00008d68     0xb3f7 ./CMSIS/DSP/Source/FilteringFunctions/FilteringFunctions.o
+ .debug_line    0x000011ad      0x777 ./source/DSP_TP4_Parte_2.o
+ .debug_line    0x00001924       0x59 ./source/semihost_hardfault.o
+ .debug_line    0x0000197d     0x14ea ./drivers/fsl_clock.o
+ .debug_line    0x00002e67      0x5cd ./drivers/fsl_dac.o
+ .debug_line    0x00003434     0x13d7 ./drivers/fsl_i2c.o
+ .debug_line    0x0000480b      0x423 ./drivers/fsl_pit.o
+ .debug_line    0x00004c2e     0x14c6 ./drivers/fsl_uart.o
+ .debug_line    0x000060f4      0x3f1 ./device/system_MK64F12.o
+ .debug_line    0x000064e5      0x542 ./component/uart/fsl_adapter_uart.o
+ .debug_line    0x00006a27      0x7dc ./component/serial_manager/fsl_component_serial_manager.o
+ .debug_line    0x00007203      0x595 ./component/serial_manager/fsl_component_serial_port_uart.o
+ .debug_line    0x00007798      0x541 ./board/board.o
+ .debug_line    0x00007cd9      0x552 ./board/clock_config.o
+ .debug_line    0x0000822b      0x4c8 ./board/peripherals.o
+ .debug_line    0x000086f3      0x674 ./board/pin_mux.o
+ .debug_line    0x00008d67     0xb3f7 ./CMSIS/DSP/Source/FilteringFunctions/FilteringFunctions.o
 
-.debug_str      0x00000000    0x85c4c
+.debug_str      0x00000000    0x85c33
  .debug_str     0x00000000    0x7b96f ./utilities/fsl_debug_console.o
                               0x7ba95 (size before relaxing)
  .debug_str     0x0007b96f      0x7d0 ./startup/startup_mk64f12.o
                                0x3637 (size before relaxing)
- .debug_str     0x0007c13f     0x2c30 ./source/DSP_TP4_Parte_2.o
-                              0x7db35 (size before relaxing)
- .debug_str     0x0007ed6f       0x1f ./source/semihost_hardfault.o
+ .debug_str     0x0007c13f     0x2c11 ./source/DSP_TP4_Parte_2.o
+                              0x7db0e (size before relaxing)
+ .debug_str     0x0007ed50       0x1f ./source/semihost_hardfault.o
                                0x2ddc (size before relaxing)
- .debug_str     0x0007ed8e     0x1e25 ./drivers/fsl_clock.o
+ .debug_str     0x0007ed6f     0x1e25 ./drivers/fsl_clock.o
                               0x7c32a (size before relaxing)
- .debug_str     0x00080bb3      0x3fe ./drivers/fsl_dac.o
+ .debug_str     0x00080b94      0x3fe ./drivers/fsl_dac.o
                               0x7ab2d (size before relaxing)
- .debug_str     0x00080fb1     0x11bf ./drivers/fsl_i2c.o
+ .debug_str     0x00080f92     0x11bf ./drivers/fsl_i2c.o
                               0x7ba19 (size before relaxing)
- .debug_str     0x00082170       0xa2 ./drivers/fsl_pit.o
+ .debug_str     0x00082151       0xa2 ./drivers/fsl_pit.o
                               0x7a7c8 (size before relaxing)
- .debug_str     0x00082212      0xe0f ./drivers/fsl_uart.o
+ .debug_str     0x000821f3      0xe0f ./drivers/fsl_uart.o
                               0x7bc64 (size before relaxing)
- .debug_str     0x00083021      0x127 ./device/system_MK64F12.o
+ .debug_str     0x00083002      0x127 ./device/system_MK64F12.o
                               0x7841c (size before relaxing)
- .debug_str     0x00083148      0x2ec ./component/uart/fsl_adapter_uart.o
+ .debug_str     0x00083129      0x2ec ./component/uart/fsl_adapter_uart.o
                               0x7abc6 (size before relaxing)
- .debug_str     0x00083434      0x401 ./component/serial_manager/fsl_component_serial_manager.o
+ .debug_str     0x00083415      0x401 ./component/serial_manager/fsl_component_serial_manager.o
                               0x7ab98 (size before relaxing)
- .debug_str     0x00083835      0x106 ./component/serial_manager/fsl_component_serial_port_uart.o
+ .debug_str     0x00083816      0x106 ./component/serial_manager/fsl_component_serial_port_uart.o
                               0x7a949 (size before relaxing)
- .debug_str     0x0008393b       0x37 ./board/board.o
+ .debug_str     0x0008391c       0x37 ./board/board.o
                               0x7b265 (size before relaxing)
- .debug_str     0x00083972      0x506 ./board/clock_config.o
+ .debug_str     0x00083953      0x506 ./board/clock_config.o
                               0x7ae26 (size before relaxing)
- .debug_str     0x00083e78       0xd2 ./board/peripherals.o
+ .debug_str     0x00083e59       0xd2 ./board/peripherals.o
                               0x7afe9 (size before relaxing)
- .debug_str     0x00083f4a      0x770 ./board/pin_mux.o
+ .debug_str     0x00083f2b      0x770 ./board/pin_mux.o
                               0x7b325 (size before relaxing)
- .debug_str     0x000846ba     0x1592 ./CMSIS/DSP/Source/FilteringFunctions/FilteringFunctions.o
+ .debug_str     0x0008469b     0x1598 ./CMSIS/DSP/Source/FilteringFunctions/FilteringFunctions.o
                                0x7081 (size before relaxing)
 
 .comment        0x00000000       0x4d
@@ -5687,7 +5682,6 @@ _terminateio                                      c:/nxp/mcuxpressoide_11.4.0_62
 _vStackTop                                        ./startup/startup_mk64f12.o
 abort                                             c:/nxp/mcuxpressoide_11.4.0_6224/ide/plugins/com.nxp.mcuxpresso.tools.win32_11.4.0.202103011116/tools/bin/../lib/gcc/arm-none-eabi/10.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libcr_c.a(stdlib.o)
 abs                                               c:/nxp/mcuxpressoide_11.4.0_6224/ide/plugins/com.nxp.mcuxpresso.tools.win32_11.4.0.202103011116/tools/bin/../lib/gcc/arm-none-eabi/10.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libcr_c.a(stdlib.o)
-acc                                               ./source/DSP_TP4_Parte_2.o
 armBitRevIndexTable1024                           ./CMSIS/DSP/Source/CommonTables/CommonTables.o
                                                   ./CMSIS/DSP/Source/TransformFunctions/TransformFunctions.o
 armBitRevIndexTable128                            ./CMSIS/DSP/Source/CommonTables/CommonTables.o
@@ -6198,11 +6192,9 @@ ispunct                                           c:/nxp/mcuxpressoide_11.4.0_62
 isspace                                           c:/nxp/mcuxpressoide_11.4.0_6224/ide/plugins/com.nxp.mcuxpresso.tools.win32_11.4.0.202103011116/tools/bin/../lib/gcc/arm-none-eabi/10.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libcr_c.a(ctype.o)
 isupper                                           c:/nxp/mcuxpressoide_11.4.0_6224/ide/plugins/com.nxp.mcuxpresso.tools.win32_11.4.0.202103011116/tools/bin/../lib/gcc/arm-none-eabi/10.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libcr_c.a(ctype.o)
 isxdigit                                          c:/nxp/mcuxpressoide_11.4.0_6224/ide/plugins/com.nxp.mcuxpresso.tools.win32_11.4.0.202103011116/tools/bin/../lib/gcc/arm-none-eabi/10.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libcr_c.a(ctype.o)
-jj                                                ./source/DSP_TP4_Parte_2.o
 labs                                              c:/nxp/mcuxpressoide_11.4.0_6224/ide/plugins/com.nxp.mcuxpresso.tools.win32_11.4.0.202103011116/tools/bin/../lib/gcc/arm-none-eabi/10.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libcr_c.a(stdlib.o)
 ldiv                                              c:/nxp/mcuxpressoide_11.4.0_6224/ide/plugins/com.nxp.mcuxpresso.tools.win32_11.4.0.202103011116/tools/bin/../lib/gcc/arm-none-eabi/10.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libcr_c.a(stdlib.o)
 lmsCoeff                                          ./source/DSP_TP4_Parte_2.o
-lmsCoeffArray                                     ./source/DSP_TP4_Parte_2.o
 lmsState                                          ./source/DSP_TP4_Parte_2.o
 lms_instance                                      ./source/DSP_TP4_Parte_2.o
 main                                              ./source/DSP_TP4_Parte_2.o
@@ -6231,7 +6223,6 @@ memset                                            c:/nxp/mcuxpressoide_11.4.0_62
                                                   ./drivers/fsl_adc16.o
                                                   ./utilities/fsl_debug_console.o
 merge_rfft_f32                                    ./CMSIS/DSP/Source/TransformFunctions/TransformFunctions.o
-mseArray                                          ./source/DSP_TP4_Parte_2.o
 oscConfig_BOARD_BootClockRUN                      ./board/clock_config.o
 oscConfig_BOARD_BootClockVLPR                     ./board/clock_config.o
 outBuff                                           ./source/DSP_TP4_Parte_2.o
