@@ -142,6 +142,7 @@ BOARD_InitPins:
 - options: {callFromInitBoot: 'true', prefix: BOARD_, coreID: core0, enableClock: 'true'}
 - pin_list:
   - {pin_num: '36', peripheral: TPIU, signal: SWO, pin_signal: PTA2/UART0_TX/FTM0_CH7/JTAG_TDO/TRACE_SWO/EZP_DO, drive_strength: low, pull_select: down, pull_enable: disable}
+  - {pin_num: '27', peripheral: DAC0, signal: OUT, pin_signal: DAC0_OUT/CMP1_IN3/ADC0_SE23}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -183,10 +184,7 @@ BOARD_InitButtonsPins:
 - options: {prefix: BOARD_, coreID: core0, enableClock: 'true'}
 - pin_list:
   - {pin_num: '78', peripheral: GPIOC, signal: 'GPIO, 6', pin_signal: CMP0_IN0/PTC6/LLWU_P10/SPI0_SOUT/PDB0_EXTRG/I2S0_RX_BCLK/FB_AD9/I2S0_MCLK, identifier: SW2,
-    direction: INPUT, gpio_interrupt: kPORT_InterruptFallingEdge, slew_rate: fast, open_drain: disable, drive_strength: low, pull_select: up, pull_enable: enable,
-    passive_filter: disable}
-  - {pin_num: '38', peripheral: GPIOA, signal: 'GPIO, 4', pin_signal: PTA4/LLWU_P3/FTM0_CH1/NMI_b/EZP_CS_b, direction: INPUT, gpio_interrupt: kPORT_InterruptFallingEdge,
-    slew_rate: fast, open_drain: disable, drive_strength: low, pull_select: down, pull_enable: disable, passive_filter: disable}
+    direction: INPUT, gpio_interrupt: kPORT_InterruptFallingEdge, pull_enable: enable, passive_filter: enable}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -199,17 +197,8 @@ BOARD_InitButtonsPins:
  * END ****************************************************************************************************************/
 void BOARD_InitButtonsPins(void)
 {
-    /* Port A Clock Gate Control: Clock enabled */
-    CLOCK_EnableClock(kCLOCK_PortA);
     /* Port C Clock Gate Control: Clock enabled */
     CLOCK_EnableClock(kCLOCK_PortC);
-
-    gpio_pin_config_t SW3_config = {
-        .pinDirection = kGPIO_DigitalInput,
-        .outputLogic = 0U
-    };
-    /* Initialize GPIO functionality on pin PTA4 (pin 38)  */
-    GPIO_PinInit(BOARD_SW3_GPIO, BOARD_SW3_PIN, &SW3_config);
 
     gpio_pin_config_t SW2_config = {
         .pinDirection = kGPIO_DigitalInput,
@@ -218,45 +207,23 @@ void BOARD_InitButtonsPins(void)
     /* Initialize GPIO functionality on pin PTC6 (pin 78)  */
     GPIO_PinInit(BOARD_SW2_GPIO, BOARD_SW2_PIN, &SW2_config);
 
-    const port_pin_config_t SW3 = {/* Internal pull-up/down resistor is disabled */
-                                   kPORT_PullDisable,
-                                   /* Fast slew rate is configured */
-                                   kPORT_FastSlewRate,
-                                   /* Passive filter is disabled */
-                                   kPORT_PassiveFilterDisable,
-                                   /* Open drain is disabled */
-                                   kPORT_OpenDrainDisable,
-                                   /* Low drive strength is configured */
-                                   kPORT_LowDriveStrength,
-                                   /* Pin is configured as PTA4 */
-                                   kPORT_MuxAsGpio,
-                                   /* Pin Control Register fields [15:0] are not locked */
-                                   kPORT_UnlockRegister};
-    /* PORTA4 (pin 38) is configured as PTA4 */
-    PORT_SetPinConfig(BOARD_SW3_PORT, BOARD_SW3_PIN, &SW3);
-
-    /* Interrupt configuration on PORTA4 (pin 38): Interrupt on falling edge */
-    PORT_SetPinInterruptConfig(BOARD_SW3_PORT, BOARD_SW3_PIN, kPORT_InterruptFallingEdge);
-
-    const port_pin_config_t SW2 = {/* Internal pull-up resistor is enabled */
-                                   kPORT_PullUp,
-                                   /* Fast slew rate is configured */
-                                   kPORT_FastSlewRate,
-                                   /* Passive filter is disabled */
-                                   kPORT_PassiveFilterDisable,
-                                   /* Open drain is disabled */
-                                   kPORT_OpenDrainDisable,
-                                   /* Low drive strength is configured */
-                                   kPORT_LowDriveStrength,
-                                   /* Pin is configured as PTC6 */
-                                   kPORT_MuxAsGpio,
-                                   /* Pin Control Register fields [15:0] are not locked */
-                                   kPORT_UnlockRegister};
     /* PORTC6 (pin 78) is configured as PTC6 */
-    PORT_SetPinConfig(BOARD_SW2_PORT, BOARD_SW2_PIN, &SW2);
+    PORT_SetPinMux(BOARD_SW2_PORT, BOARD_SW2_PIN, kPORT_MuxAsGpio);
 
     /* Interrupt configuration on PORTC6 (pin 78): Interrupt on falling edge */
     PORT_SetPinInterruptConfig(BOARD_SW2_PORT, BOARD_SW2_PIN, kPORT_InterruptFallingEdge);
+
+    PORTC->PCR[6] = ((PORTC->PCR[6] &
+                      /* Mask bits to zero which are setting */
+                      (~(PORT_PCR_PE_MASK | PORT_PCR_PFE_MASK | PORT_PCR_ISF_MASK)))
+
+                     /* Pull Enable: Internal pullup or pulldown resistor is enabled on the corresponding pin. */
+                     | (uint32_t)(PORT_PCR_PE_MASK)
+
+                     /* Passive Filter Enable: Passive input filter is enabled on the corresponding pin, if the
+                      * pin is configured as a digital input.
+                      * Refer to the device data sheet for filter characteristics. */
+                     | PORT_PCR_PFE(kPORT_PassiveFilterEnable));
 }
 
 /* clang-format off */

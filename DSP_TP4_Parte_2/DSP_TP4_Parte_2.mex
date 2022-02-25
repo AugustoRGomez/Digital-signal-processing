@@ -142,6 +142,11 @@
                         <data>true</data>
                      </feature>
                   </dependency>
+                  <dependency resourceType="Peripheral" resourceId="DAC0" description="Peripheral DAC0 is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
+                     <feature name="initialized" evaluation="equal">
+                        <data>true</data>
+                     </feature>
+                  </dependency>
                   <dependency resourceType="SWComponent" resourceId="platform.drivers.common" description="Pins initialization requires the COMMON Driver in the project." problem_level="2" source="Pins:BOARD_InitPins">
                      <feature name="enabled" evaluation="equal" configuration="core0">
                         <data>true</data>
@@ -161,6 +166,7 @@
                         <pin_feature name="pull_enable" value="disable"/>
                      </pin_features>
                   </pin>
+                  <pin peripheral="DAC0" signal="OUT" pin_num="27" pin_signal="DAC0_OUT/CMP1_IN3/ADC0_SE23"/>
                </pins>
             </function>
             <function name="BOARD_InitButtonsPins">
@@ -172,11 +178,6 @@
                </options>
                <dependencies>
                   <dependency resourceType="Peripheral" resourceId="GPIOC" description="Peripheral GPIOC is not initialized" problem_level="1" source="Pins:BOARD_InitButtonsPins">
-                     <feature name="initialized" evaluation="equal">
-                        <data>true</data>
-                     </feature>
-                  </dependency>
-                  <dependency resourceType="Peripheral" resourceId="GPIOA" description="Peripheral GPIOA is not initialized" problem_level="1" source="Pins:BOARD_InitButtonsPins">
                      <feature name="initialized" evaluation="equal">
                         <data>true</data>
                      </feature>
@@ -203,24 +204,8 @@
                         <pin_feature name="identifier" value="SW2"/>
                         <pin_feature name="direction" value="INPUT"/>
                         <pin_feature name="gpio_interrupt" value="kPORT_InterruptFallingEdge"/>
-                        <pin_feature name="slew_rate" value="fast"/>
-                        <pin_feature name="open_drain" value="disable"/>
-                        <pin_feature name="drive_strength" value="low"/>
-                        <pin_feature name="pull_select" value="up"/>
                         <pin_feature name="pull_enable" value="enable"/>
-                        <pin_feature name="passive_filter" value="disable"/>
-                     </pin_features>
-                  </pin>
-                  <pin peripheral="GPIOA" signal="GPIO, 4" pin_num="38" pin_signal="PTA4/LLWU_P3/FTM0_CH1/NMI_b/EZP_CS_b">
-                     <pin_features>
-                        <pin_feature name="direction" value="INPUT"/>
-                        <pin_feature name="gpio_interrupt" value="kPORT_InterruptFallingEdge"/>
-                        <pin_feature name="slew_rate" value="fast"/>
-                        <pin_feature name="open_drain" value="disable"/>
-                        <pin_feature name="drive_strength" value="low"/>
-                        <pin_feature name="pull_select" value="down"/>
-                        <pin_feature name="pull_enable" value="disable"/>
-                        <pin_feature name="passive_filter" value="disable"/>
+                        <pin_feature name="passive_filter" value="enable"/>
                      </pin_features>
                   </pin>
                </pins>
@@ -875,6 +860,16 @@
                   <data type="Version">2.0.0</data>
                </feature>
             </dependency>
+            <dependency resourceType="SWComponent" resourceId="platform.drivers.gpio" description="GPIO Driver not found in the toolchain/IDE project. Project will not compile!" problem_level="2" source="Peripherals">
+               <feature name="enabled" evaluation="equal">
+                  <data type="Boolean">true</data>
+               </feature>
+            </dependency>
+            <dependency resourceType="SWComponent" resourceId="platform.drivers.gpio" description="Unsupported version of the GPIO Driver in the toolchain/IDE project. Required: ${required_value}, actual: ${actual_value}. Project might not compile correctly." problem_level="1" source="Peripherals">
+               <feature name="version" evaluation="greaterOrEqual">
+                  <data type="Version">2.4.0</data>
+               </feature>
+            </dependency>
          </dependencies>
          <generated_project_files>
             <file path="board/peripherals.c" update_enabled="true"/>
@@ -903,12 +898,23 @@
                         <data type="Frequency" unit="Hz">0</data>
                      </feature>
                   </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.port" description="The fsl_port driver is missing in the project (required for the GPIO driver)." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="enabled" evaluation="equal">
+                        <data type="Boolean">true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.port" description="The compatible version of the fsl_port driver is not available in the project (required for the GPIO driver)." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="version" evaluation="compatible">
+                        <data type="Version">2.1.0</data>
+                     </feature>
+                  </dependency>
                </dependencies>
                <instances>
                   <instance name="NVIC" uuid="74d97fc4-a5df-4756-b4f7-d0817d2e3edd" type="nvic" type_id="nvic_57b5eef3774cc60acaede6f5b8bddc67" mode="general" peripheral="NVIC" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
                      <config_set name="nvic">
                         <array name="interrupt_table">
                            <struct name="0"/>
+                           <struct name="1"/>
                         </array>
                         <array name="interrupts"/>
                      </config_set>
@@ -947,6 +953,30 @@
                               </struct>
                            </struct>
                         </array>
+                     </config_set>
+                  </instance>
+                  <instance name="GPIOA" uuid="4811a8ba-ebdc-4a1c-8f46-c17aa2bd4ad8" type="gpio" type_id="gpio_5920c5e026e8e974e6dc54fbd5e22ad7" mode="GPIO" peripheral="GPIOA" enabled="false" comment="" custom_name_enabled="false" editing_lock="false">
+                     <config_set name="fsl_gpio">
+                        <setting name="enable_irq" value="true"/>
+                        <struct name="port_interrupt">
+                           <setting name="IRQn" value="PORTA_IRQn"/>
+                           <setting name="enable_interrrupt" value="enabled"/>
+                           <setting name="enable_priority" value="false"/>
+                           <setting name="priority" value="0"/>
+                           <setting name="enable_custom_name" value="false"/>
+                        </struct>
+                     </config_set>
+                  </instance>
+                  <instance name="GPIOC" uuid="8a734dba-efc2-4960-a74a-a76b75cae7c5" type="gpio" type_id="gpio_5920c5e026e8e974e6dc54fbd5e22ad7" mode="GPIO" peripheral="GPIOC" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
+                     <config_set name="fsl_gpio">
+                        <setting name="enable_irq" value="true"/>
+                        <struct name="port_interrupt">
+                           <setting name="IRQn" value="PORTC_IRQn"/>
+                           <setting name="enable_interrrupt" value="enabled"/>
+                           <setting name="enable_priority" value="false"/>
+                           <setting name="priority" value="0"/>
+                           <setting name="enable_custom_name" value="false"/>
+                        </struct>
                      </config_set>
                   </instance>
                </instances>

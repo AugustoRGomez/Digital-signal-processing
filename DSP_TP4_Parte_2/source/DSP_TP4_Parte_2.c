@@ -1,8 +1,10 @@
 /*
  *	LMS Adaptative Filter
  *	Active Noise Cancellation
+ *	(version que SI funciona)
  *	Pagina 287- DSP_CORTEX_M4
- *	Pines:
+ *	Pines/Funciones:
+ *		SW2: Controla que señal mostrará el DAC
  *		DAC: J4-11
 */
 
@@ -27,18 +29,15 @@
  * 0.001 -> 0x0020
  */
 
-#define OUT_LMS //que muestra el DAC: OUT_ERROR, OUT_REF, OUT_LMS, OUT_FIR, OUT_SN, OUT_NOISE
 #define HALF_RANGE_UINT_16 32767U
 #define NUMTAPS 30U
 #define BLOCKSIZE 1U
 #define MU 0x0147
-#define SAMPLES_NUM 256U
-#define SAMPLES_PERIOD 100U
 #define INPUT_POWER 1U //hasta 15 -> minimo valor no nulo 3 9 12 15
 
-#define FREQ 700
+#define FREQ 1000
 #define SR 8000
-#define SINE_BUFF_LEN 12 //SR/FREQ
+#define SINE_BUFF_LEN 8 //SR/FREQ
 
 q15_t inBuff[BLOCKSIZE];
 q15_t refBuff[BLOCKSIZE];
@@ -61,9 +60,13 @@ arm_fir_instance_q15 fir_instance;
 
 int samplesCnt = 0;
 
+//DEBUG
+uint8_t selection = 0;
+
 int main(void) {
 	/* Init board hardware. */
-	BOARD_InitBootPins();
+ 	BOARD_InitBootPins();
+ 	BOARD_InitButtonsPins(); //Nose porque no se agrego solo
 	BOARD_InitBootClocks();
 	BOARD_InitBootPeripherals();
 #ifndef BOARD_INIT_DEBUG_CONSOLE_PERIPHERAL
@@ -73,6 +76,7 @@ int main(void) {
 
     arm_lms_init_q15(&lms_instance, NUMTAPS, lmsCoeff, lmsState, MU, BLOCKSIZE, 0U);
     arm_fir_init_q15(&fir_instance, NUMTAPS, planta_fir, firState, BLOCKSIZE);
+
     PIT_StartTimer(PIT_PERIPHERAL, PIT_CHANNEL_0);
 
     //Sine Wave table generation
@@ -94,11 +98,14 @@ void PIT_CHANNEL_0_IRQHANDLER(void) {
 	PIT_ClearStatusFlags(PIT_PERIPHERAL, PIT_CHANNEL_0, intStatus);
 
 	/* Processing */
-	q15_t rndVal = ((q15_t) rand()) >> INPUT_POWER; //divido por potencias de dos, limito la "amplitud" del ruido
-	q15_t signalNoise = inSignalQ15[samplesCnt] + rndVal;
+	q15_t rndVal;
+	q15_t signalNoise;
+
+	rndVal = ((q15_t) rand()) >> INPUT_POWER; //divido por potencias de dos, limito la "amplitud" del ruido
+	signalNoise = inSignalQ15[samplesCnt] + firOutBuff[0];
 
 	arm_fir_q15(&fir_instance, &rndVal, firOutBuff, BLOCKSIZE);
-	arm_lms_q15(&lms_instance, firOutBuff, &signalNoise, outBuff, errBuff, BLOCKSIZE);
+	arm_lms_q15(&lms_instance, &rndVal, &signalNoise, outBuff, errBuff, BLOCKSIZE);
 
 	if(samplesCnt == SINE_BUFF_LEN-1)
 		samplesCnt = 0;
@@ -107,29 +114,61 @@ void PIT_CHANNEL_0_IRQHANDLER(void) {
 
 	/* DAC Output: La función DAC_setBufferValue toma los 12 bits menos significativos,
 	 * por eso se shiftea 4 veces para que incluya la parte más significativa */
-#ifdef OUT_REF
-	DAC_SetBufferValue(DAC0_PERIPHERAL, 0u, ((uint16_t) ((inSignalQ15[samplesCnt] + HALF_RANGE_UINT_16) >> 4)));
-#endif
-#ifdef OUT_FIR
-	DAC_SetBufferValue(DAC0_PERIPHERAL, 0u, ((uint16_t) ((*pFirOut + HALF_RANGE_UINT_16) >> 4)));
-#endif
-#ifdef OUT_ERROR
-	DAC_SetBufferValue(DAC0_PERIPHERAL, 0u, ((uint16_t) ((*pErr + HALF_RANGE_UINT_16) >> 4)));
-#endif
-#ifdef OUT_LMS
-	DAC_SetBufferValue(DAC0_PERIPHERAL, 0u, ((uint16_t) ((*pOut + HALF_RANGE_UINT_16) >> 4)));
-#endif
-#ifdef OUT_SN
-	DAC_SetBufferValue(DAC0_PERIPHERAL, 0u, ((uint16_t) ((signalNoise + HALF_RANGE_UINT_16) >> 4)));
-#endif
-#ifdef OUT_NOISE
-	DAC_SetBufferValue(DAC0_PERIPHERAL, 0u, ((uint16_t) ((rndVal + HALF_RANGE_UINT_16) >> 4)));
-#endif
-
+	switch (selection) {
+		case 0:
+			//OUT_REF
+			DAC_SetBufferValue(DAC0_PERIPHERAL, 0u, ((uint16_t) ((inSignalQ15[samplesCnt] + HALF_RANGE_UINT_16) >> 4)));
+			break;
+		case 1:
+			//OUT_FIR
+			DAC_SetBufferValue(DAC0_PERIPHERAL, 0u, ((uint16_t) ((*pFirOut + HALF_RANGE_UINT_16) >> 4)));
+			break;
+		case 2:
+			//OUT_ERROR
+			DAC_SetBufferValue(DAC0_PERIPHERAL, 0u, ((uint16_t) ((*pErr + HALF_RANGE_UINT_16) >> 4)));
+			break;
+		case 3:
+			//OUT_LMS
+			DAC_SetBufferValue(DAC0_PERIPHERAL, 0u, ((uint16_t) ((*pOut + HALF_RANGE_UINT_16) >> 4)));
+			break;
+		case 4:
+			//OUT_SN
+			DAC_SetBufferValue(DAC0_PERIPHERAL, 0u, ((uint16_t) ((signalNoise + HALF_RANGE_UINT_16) >> 4)));
+			break;
+		case 5:
+			//OUT_NOISE
+			DAC_SetBufferValue(DAC0_PERIPHERAL, 0u, ((uint16_t) ((rndVal + HALF_RANGE_UINT_16) >> 4)));
+			break;
+		default:
+			//OUT_REF
+			DAC_SetBufferValue(DAC0_PERIPHERAL, 0u, ((uint16_t) ((inSignalQ15[samplesCnt] + HALF_RANGE_UINT_16) >> 4)));
+			break;
+	}
 
 	/* Add for ARM errata 838869, affects Cortex-M4, Cortex-M4F
 	 Store immediate overlapping exception return operation might vector to incorrect interrupt. */
 	#if defined __CORTEX_M && (__CORTEX_M == 4U)
 	__DSB();
 	#endif
+}
+
+/* PORTC_IRQn interrupt handler */
+void GPIOC_IRQHANDLER(void) {
+  /* Get pin flags */
+  uint32_t pin_flags = GPIO_PortGetInterruptFlags(GPIOC);
+
+  /* Place your interrupt code here */
+  if(selection == 5)
+  	  selection = 0;
+  else
+  	  selection++;
+
+  /* Clear pin flags */
+  GPIO_PortClearInterruptFlags(GPIOC, pin_flags);
+
+  /* Add for ARM errata 838869, affects Cortex-M4, Cortex-M4F
+     Store immediate overlapping exception return operation might vector to incorrect interrupt. */
+  #if defined __CORTEX_M && (__CORTEX_M == 4U)
+    __DSB();
+  #endif
 }

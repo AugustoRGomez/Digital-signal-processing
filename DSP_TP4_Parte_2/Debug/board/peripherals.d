@@ -13,7 +13,9 @@ board/peripherals.o board/peripherals.d: ../board/peripherals.c \
  C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_2\drivers/fsl_clock.h \
  C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_2\drivers/fsl_common.h \
  C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_2\drivers/fsl_dac.h \
- C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_2\drivers/fsl_pit.h
+ C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_2\drivers/fsl_pit.h \
+ C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_2\drivers/fsl_gpio.h \
+ C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_2\drivers/fsl_port.h
 ../board/peripherals.h:
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_2\drivers/fsl_common.h:
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_2\device/fsl_device_registers.h:
@@ -29,3 +31,5 @@ C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_2\dr
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_2\drivers/fsl_common.h:
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_2\drivers/fsl_dac.h:
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_2\drivers/fsl_pit.h:
+C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_2\drivers/fsl_gpio.h:
+C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TP4_Parte_2\drivers/fsl_port.h:
