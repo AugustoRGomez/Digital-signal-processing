@@ -1,0 +1,6 @@
+C:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_ftm.h:648:20:FTM_SetTimerPeriod	16	static
+C:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_ftm.h:700:20:FTM_StartTimer	24	static
+../board/peripherals.c:104:13:I2C0_init	8	static
+../board/peripherals.c:196:13:FTM0_init	8	static
+../board/peripherals.c:206:6:BOARD_InitPeripherals	8	static
+../board/peripherals.c:216:6:BOARD_InitBootPeripherals	8	static

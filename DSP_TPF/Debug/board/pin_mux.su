@@ -1,0 +1,14 @@
+C:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_clock.h:668:20:CLOCK_EnableClock	24	static
+C:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_port.h:271:20:PORT_SetPinConfig	32	static
+C:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_port.h:374:20:PORT_SetPinMux	24	static
+C:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_port.h:443:20:PORT_SetPinInterruptConfig	24	static
+../board/pin_mux.c:132:6:BOARD_InitBootPins	8	static
+../board/pin_mux.c:159:6:BOARD_InitPins	8	static
+../board/pin_mux.c:244:6:BOARD_InitButtonsPins	24	static
+../board/pin_mux.c:328:6:BOARD_InitLEDsPins	32	static
+../board/pin_mux.c:428:6:BOARD_InitDEBUG_UARTPins	16	static
+../board/pin_mux.c:495:6:BOARD_InitOSCPins	8	static
+../board/pin_mux.c:528:6:BOARD_InitACCELPins	32	static
+../board/pin_mux.c:654:6:BOARD_InitENETPins	48	static
+../board/pin_mux.c:869:6:BOARD_InitSDHCPins	40	static
+../board/pin_mux.c:1019:6:BOARD_InitUSBPins	4	static
