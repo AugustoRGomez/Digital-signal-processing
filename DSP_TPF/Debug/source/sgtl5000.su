@@ -1,5 +1,5 @@
-../source/sgtl5000.c:9:6:sgtl5000_read_register	48	static
-../source/sgtl5000.c:27:6:sgtl5000_write_register	48	static
-../source/sgtl5000.c:51:6:sgtl5000_modify_register	32	static
-../source/sgtl5000.c:73:6:sgtl5000_power_up	4	static
-../source/sgtl5000.c:76:6:sgtl5000_test	16	static
+../source/sgtl5000.c:9:10:sgtl5000_read_register	48	static
+../source/sgtl5000.c:29:6:sgtl5000_write_register	48	static
+../source/sgtl5000.c:53:6:sgtl5000_modify_register	32	static
+../source/sgtl5000.c:75:6:sgtl5000_power_up	8	static
+../source/sgtl5000.c:143:6:sgtl5000_RW_test	16	static

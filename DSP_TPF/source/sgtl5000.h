@@ -61,9 +61,10 @@
 #define I2C_SLAVE_ADDR 0x0A
 #define WAIT_TIME 10U
 
-void sgtl5000_read_register(uint16_t *rBuff, uint16_t addr);
-void sgtl5000_write_register(uint16_t *wBuff, uint16_t addr);
+uint16_t sgtl5000_read_register(uint16_t addr);
+void sgtl5000_write_register(uint16_t wBuff, uint16_t addr);
 void sgtl5000_modify_register(uint16_t addr, uint16_t newBits, uint8_t bitLen, uint8_t bitShift);
-void sgtl5000_test();
+void sgtl5000_RW_test();
+void sgtl5000_power_up();
 
 #endif /* SGTL5000_H_ */

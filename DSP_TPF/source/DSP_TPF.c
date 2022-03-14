@@ -13,7 +13,7 @@
  * 	 FTM:
  * 	  -MCLK: J1[5]
  *
- * 	TWR-k60n512:
+ * 	TWR-ELEV:
  * 	 I2C:
  * 	  -SDA : J8[8]
  * 	  -SCLK : J8[7]
@@ -38,6 +38,7 @@
 #include "sgtl5000.h"
 
 /* TODO: insert other definitions and declarations here. */
+uint16_t wBuff, rBuff;
 
 /* TODO: Main */
 int main(void) {
@@ -50,7 +51,7 @@ int main(void) {
     BOARD_InitDebugConsole();
 #endif
 
-    sgtl5000_test(&wBuff, &rBuff);
+    sgtl5000_RW_test();
 
     while(1) {}
     return 0 ;
