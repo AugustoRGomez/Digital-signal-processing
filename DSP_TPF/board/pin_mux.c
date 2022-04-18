@@ -17,7 +17,7 @@ pin_labels:
 - {pin_num: '90', pin_signal: PTC16/UART3_RX/ENET0_1588_TMR0/FB_CS5_b/FB_TSIZ1/FB_BE23_16_BLS15_8_b, label: 'J1[2]', identifier: TMR_1588_0}
 - {pin_num: '91', pin_signal: PTC17/UART3_TX/ENET0_1588_TMR1/FB_CS4_b/FB_TSIZ0/FB_BE31_24_BLS7_0_b, label: 'J1[4]', identifier: TMR_1588_1}
 - {pin_num: '57', pin_signal: PTB9/SPI1_PCS1/UART3_CTS_b/FB_AD20, label: 'J1[6]'}
-- {pin_num: '35', pin_signal: PTA1/UART0_RX/FTM0_CH6/JTAG_TDI/EZP_DI, label: 'J1[8]'}
+- {pin_num: '35', pin_signal: PTA1/UART0_RX/FTM0_CH6/JTAG_TDI/EZP_DI, label: 'J1[8]', identifier: GPIO_pin}
 - {pin_num: '69', pin_signal: PTB23/SPI2_SIN/SPI0_PCS5/FB_AD28, label: 'J1[10]'}
 - {pin_num: '36', pin_signal: PTA2/UART0_TX/FTM0_CH7/JTAG_TDO/TRACE_SWO/EZP_DO, label: 'J1[12]/J9[6]/TRACE_SWO'}
 - {pin_num: '72', pin_signal: ADC0_SE4b/CMP1_IN0/PTC2/SPI0_PCS2/UART1_CTS_b/FTM0_CH1/FB_AD12/I2S0_TX_FS, label: 'J1[14]'}
@@ -145,7 +145,11 @@ BOARD_InitPins:
   - {pin_num: '32', peripheral: I2C0, signal: SDA, pin_signal: ADC0_SE18/PTE25/UART4_RX/I2C0_SDA/EWM_IN, identifier: '', open_drain: enable, pull_select: up, pull_enable: enable}
   - {pin_num: '31', peripheral: I2C0, signal: SCL, pin_signal: ADC0_SE17/PTE24/UART4_TX/I2C0_SCL/EWM_OUT_b, identifier: '', open_drain: enable, pull_select: up, pull_enable: enable}
   - {pin_num: '80', peripheral: I2S0, signal: MCLK, pin_signal: ADC1_SE4b/CMP0_IN2/PTC8/FTM3_CH4/I2S0_MCLK/FB_AD7}
-  - {pin_num: '71', peripheral: FTM0, signal: 'CH, 0', pin_signal: ADC0_SE15/PTC1/LLWU_P6/SPI0_PCS3/UART1_RTS_b/FTM0_CH0/FB_AD13/I2S0_TXD0, direction: OUTPUT}
+  - {pin_num: '81', peripheral: I2S0, signal: RX_BCLK, pin_signal: ADC1_SE5b/CMP0_IN3/PTC9/FTM3_CH5/I2S0_RX_BCLK/FB_AD6/FTM2_FLT0}
+  - {pin_num: '77', peripheral: I2S0, signal: RXD0, pin_signal: PTC5/LLWU_P9/SPI0_SCK/LPTMR0_ALT2/I2S0_RXD0/FB_AD10/CMP0_OUT/FTM0_CH2}
+  - {pin_num: '71', peripheral: I2S0, signal: TXD0, pin_signal: ADC0_SE15/PTC1/LLWU_P6/SPI0_PCS3/UART1_RTS_b/FTM0_CH0/FB_AD13/I2S0_TXD0, identifier: ''}
+  - {pin_num: '79', peripheral: I2S0, signal: RX_FS, pin_signal: CMP0_IN1/PTC7/SPI0_SIN/USB_SOF_OUT/I2S0_RX_FS/FB_AD8}
+  - {pin_num: '35', peripheral: GPIOA, signal: 'GPIO, 1', pin_signal: PTA1/UART0_RX/FTM0_CH6/JTAG_TDI/EZP_DI, direction: OUTPUT, gpio_init_state: 'false'}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -165,6 +169,16 @@ void BOARD_InitPins(void)
     /* Port E Clock Gate Control: Clock enabled */
     CLOCK_EnableClock(kCLOCK_PortE);
 
+    gpio_pin_config_t GPIO_pin_config = {
+        .pinDirection = kGPIO_DigitalOutput,
+        .outputLogic = 0U
+    };
+    /* Initialize GPIO functionality on pin PTA1 (pin 35)  */
+    GPIO_PinInit(BOARD_GPIO_pin_GPIO, BOARD_GPIO_pin_PIN, &GPIO_pin_config);
+
+    /* PORTA1 (pin 35) is configured as PTA1 */
+    PORT_SetPinMux(BOARD_GPIO_pin_PORT, BOARD_GPIO_pin_PIN, kPORT_MuxAsGpio);
+
     /* PORTA2 (pin 36) is configured as TRACE_SWO */
     PORT_SetPinMux(PORTA, 2U, kPORT_MuxAlt7);
 
@@ -183,11 +197,20 @@ void BOARD_InitPins(void)
                       * is configured as a digital output. */
                      | PORT_PCR_DSE(kPORT_LowDriveStrength));
 
-    /* PORTC1 (pin 71) is configured as FTM0_CH0 */
-    PORT_SetPinMux(BOARD_FTM_CLK_PORT, BOARD_FTM_CLK_PIN, kPORT_MuxAlt4);
+    /* PORTC1 (pin 71) is configured as I2S0_TXD0 */
+    PORT_SetPinMux(PORTC, 1U, kPORT_MuxAlt6);
+
+    /* PORTC5 (pin 77) is configured as I2S0_RXD0 */
+    PORT_SetPinMux(PORTC, 5U, kPORT_MuxAlt4);
+
+    /* PORTC7 (pin 79) is configured as I2S0_RX_FS */
+    PORT_SetPinMux(BOARD_CMP0_IN1_PORT, BOARD_CMP0_IN1_PIN, kPORT_MuxAlt4);
 
     /* PORTC8 (pin 80) is configured as I2S0_MCLK */
     PORT_SetPinMux(PORTC, 8U, kPORT_MuxAlt4);
+
+    /* PORTC9 (pin 81) is configured as I2S0_RX_BCLK */
+    PORT_SetPinMux(PORTC, 9U, kPORT_MuxAlt4);
 
     /* PORTE24 (pin 31) is configured as I2C0_SCL */
     PORT_SetPinMux(PORTE, 24U, kPORT_MuxAlt5);

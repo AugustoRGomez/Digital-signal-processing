@@ -1,0 +1,15 @@
+C:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\CMSIS/core_cm4.h:1679:22:__NVIC_EnableIRQ	16	static
+../drivers/fsl_common_arm.h:488:24:EnableIRQ	24	static
+../drivers/fsl_uart.h:531:24:UART_GetDataRegisterAddress	16	static
+../drivers/fsl_uart.h:544:20:UART_EnableTxDMA	16	static
+../drivers/fsl_uart.h:574:20:UART_EnableRxDMA	16	static
+../drivers/fsl_uart_edma.c:100:13:UART_SendEDMACallback	32	static
+../drivers/fsl_uart_edma.c:122:13:UART_ReceiveEDMACallback	40	static
+../drivers/fsl_uart_edma.c:154:6:UART_TransferCreateHandleEDMA	32	static
+../drivers/fsl_uart_edma.c:228:10:UART_SendEDMA	80	static
+../drivers/fsl_uart_edma.c:282:10:UART_ReceiveEDMA	80	static
+../drivers/fsl_uart_edma.c:331:6:UART_TransferAbortSendEDMA	16	static
+../drivers/fsl_uart_edma.c:353:6:UART_TransferAbortReceiveEDMA	16	static
+../drivers/fsl_uart_edma.c:379:10:UART_TransferGetReceiveCountEDMA	32	static
+../drivers/fsl_uart_edma.c:410:10:UART_TransferGetSendCountEDMA	32	static
+../drivers/fsl_uart_edma.c:436:6:UART_TransferEdmaHandleIRQ	32	static

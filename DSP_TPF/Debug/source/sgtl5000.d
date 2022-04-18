@@ -17,9 +17,15 @@ source/sgtl5000.o source/sgtl5000.d: ../source/sgtl5000.c \
  C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_gpio.h \
  C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_port.h \
  C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\board/peripherals.h \
+ C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_edma.h \
+ C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_dmamux.h \
  C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_i2c.h \
+ C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_sai.h \
+ C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_sai_edma.h \
+ C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_edma.h \
+ C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_sai.h \
  C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_clock.h \
- C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_ftm.h \
+ C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_uart.h \
  C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\board/pin_mux.h \
  C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\board/clock_config.h \
  C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\device/MK64F12.h \
@@ -45,9 +51,15 @@ C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fs
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_gpio.h:
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_port.h:
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\board/peripherals.h:
+C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_edma.h:
+C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_dmamux.h:
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_i2c.h:
+C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_sai.h:
+C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_sai_edma.h:
+C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_edma.h:
+C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_sai.h:
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_clock.h:
-C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_ftm.h:
+C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_uart.h:
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\board/pin_mux.h:
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\board/clock_config.h:
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\device/MK64F12.h:

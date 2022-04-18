@@ -1,0 +1,8 @@
+../drivers/fsl_clock.h:668:20:CLOCK_EnableClock	24	static
+../drivers/fsl_clock.h:679:20:CLOCK_DisableClock	24	static
+../drivers/fsl_pdb.h:311:20:PDB_Enable	16	static
+../drivers/fsl_pdb.c:39:17:PDB_GetInstance	24	static
+../drivers/fsl_pdb.c:68:6:PDB_Init	24	static
+../drivers/fsl_pdb.c:100:6:PDB_Deinit	16	static
+../drivers/fsl_pdb.c:123:6:PDB_GetDefaultConfig	16	static
+../drivers/fsl_pdb.c:145:6:PDB_SetDACTriggerConfig	32	static

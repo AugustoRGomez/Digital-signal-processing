@@ -28,7 +28,7 @@
                <pin_label pin_num="90" pin_signal="PTC16/UART3_RX/ENET0_1588_TMR0/FB_CS5_b/FB_TSIZ1/FB_BE23_16_BLS15_8_b" label="J1[2]" identifier="TMR_1588_0"/>
                <pin_label pin_num="91" pin_signal="PTC17/UART3_TX/ENET0_1588_TMR1/FB_CS4_b/FB_TSIZ0/FB_BE31_24_BLS7_0_b" label="J1[4]" identifier="TMR_1588_1"/>
                <pin_label pin_num="57" pin_signal="PTB9/SPI1_PCS1/UART3_CTS_b/FB_AD20" label="J1[6]"/>
-               <pin_label pin_num="35" pin_signal="PTA1/UART0_RX/FTM0_CH6/JTAG_TDI/EZP_DI" label="J1[8]"/>
+               <pin_label pin_num="35" pin_signal="PTA1/UART0_RX/FTM0_CH6/JTAG_TDI/EZP_DI" label="J1[8]" identifier="GPIO_pin"/>
                <pin_label pin_num="69" pin_signal="PTB23/SPI2_SIN/SPI0_PCS5/FB_AD28" label="J1[10]"/>
                <pin_label pin_num="36" pin_signal="PTA2/UART0_TX/FTM0_CH7/JTAG_TDO/TRACE_SWO/EZP_DO" label="J1[12]/J9[6]/TRACE_SWO"/>
                <pin_label pin_num="72" pin_signal="ADC0_SE4b/CMP1_IN0/PTC2/SPI0_PCS2/UART1_CTS_b/FTM0_CH1/FB_AD12/I2S0_TX_FS" label="J1[14]"/>
@@ -152,17 +152,17 @@
                         <data>true</data>
                      </feature>
                   </dependency>
-                  <dependency resourceType="Peripheral" resourceId="FTM0" description="Peripheral FTM0 is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
-                     <feature name="initialized" evaluation="equal">
-                        <data>true</data>
-                     </feature>
-                  </dependency>
                   <dependency resourceType="SWComponent" resourceId="platform.drivers.common" description="Pins initialization requires the COMMON Driver in the project." problem_level="2" source="Pins:BOARD_InitPins">
                      <feature name="enabled" evaluation="equal" configuration="core0">
                         <data>true</data>
                      </feature>
                   </dependency>
                   <dependency resourceType="SWComponent" resourceId="platform.drivers.port" description="Pins initialization requires the PORT Driver in the project." problem_level="2" source="Pins:BOARD_InitPins">
+                     <feature name="enabled" evaluation="equal" configuration="core0">
+                        <data>true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.gpio" description="Pins initialization requires the GPIO Driver in the project." problem_level="2" source="Pins:BOARD_InitPins">
                      <feature name="enabled" evaluation="equal" configuration="core0">
                         <data>true</data>
                      </feature>
@@ -193,9 +193,18 @@
                      </pin_features>
                   </pin>
                   <pin peripheral="I2S0" signal="MCLK" pin_num="80" pin_signal="ADC1_SE4b/CMP0_IN2/PTC8/FTM3_CH4/I2S0_MCLK/FB_AD7"/>
-                  <pin peripheral="FTM0" signal="CH, 0" pin_num="71" pin_signal="ADC0_SE15/PTC1/LLWU_P6/SPI0_PCS3/UART1_RTS_b/FTM0_CH0/FB_AD13/I2S0_TXD0">
+                  <pin peripheral="I2S0" signal="RX_BCLK" pin_num="81" pin_signal="ADC1_SE5b/CMP0_IN3/PTC9/FTM3_CH5/I2S0_RX_BCLK/FB_AD6/FTM2_FLT0"/>
+                  <pin peripheral="I2S0" signal="RXD0" pin_num="77" pin_signal="PTC5/LLWU_P9/SPI0_SCK/LPTMR0_ALT2/I2S0_RXD0/FB_AD10/CMP0_OUT/FTM0_CH2"/>
+                  <pin peripheral="I2S0" signal="TXD0" pin_num="71" pin_signal="ADC0_SE15/PTC1/LLWU_P6/SPI0_PCS3/UART1_RTS_b/FTM0_CH0/FB_AD13/I2S0_TXD0">
+                     <pin_features>
+                        <pin_feature name="identifier" value=""/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="I2S0" signal="RX_FS" pin_num="79" pin_signal="CMP0_IN1/PTC7/SPI0_SIN/USB_SOF_OUT/I2S0_RX_FS/FB_AD8"/>
+                  <pin peripheral="GPIOA" signal="GPIO, 1" pin_num="35" pin_signal="PTA1/UART0_RX/FTM0_CH6/JTAG_TDI/EZP_DI">
                      <pin_features>
                         <pin_feature name="direction" value="OUTPUT"/>
+                        <pin_feature name="gpio_init_state" value="false"/>
                      </pin_features>
                   </pin>
                </pins>
@@ -902,14 +911,34 @@
                   <data type="Version">2.0.5</data>
                </feature>
             </dependency>
-            <dependency resourceType="SWComponent" resourceId="platform.drivers.ftm" description="FTM Driver not found in the toolchain/IDE project. Project will not compile!" problem_level="2" source="Peripherals">
+            <dependency resourceType="SWComponent" resourceId="platform.drivers.sai" description="SAI Driver not found in the toolchain/IDE project. Project will not compile!" problem_level="2" source="Peripherals">
                <feature name="enabled" evaluation="equal">
                   <data type="Boolean">true</data>
                </feature>
             </dependency>
-            <dependency resourceType="SWComponent" resourceId="platform.drivers.ftm" description="Unsupported version of the FTM Driver in the toolchain/IDE project. Required: ${required_value}, actual: ${actual_value}. Project might not compile correctly." problem_level="1" source="Peripherals">
+            <dependency resourceType="SWComponent" resourceId="platform.drivers.sai" description="Unsupported version of the SAI Driver in the toolchain/IDE project. Required: ${required_value}, actual: ${actual_value}. Project might not compile correctly." problem_level="1" source="Peripherals">
+               <feature name="version" evaluation="equivalent">
+                  <data type="Version">2.3.1</data>
+               </feature>
+            </dependency>
+            <dependency resourceType="SWComponent" resourceId="platform.drivers.edma" description="EDMA Driver not found in the toolchain/IDE project. Project will not compile!" problem_level="2" source="Peripherals">
+               <feature name="enabled" evaluation="equal">
+                  <data type="Boolean">true</data>
+               </feature>
+            </dependency>
+            <dependency resourceType="SWComponent" resourceId="platform.drivers.edma" description="Unsupported version of the EDMA Driver in the toolchain/IDE project. Required: ${required_value}, actual: ${actual_value}. Project might not compile correctly." problem_level="1" source="Peripherals">
                <feature name="version" evaluation="greaterOrEqual">
                   <data type="Version">2.3.0</data>
+               </feature>
+            </dependency>
+            <dependency resourceType="SWComponent" resourceId="platform.drivers.uart" description="UART Driver not found in the toolchain/IDE project. Project will not compile!" problem_level="2" source="Peripherals">
+               <feature name="enabled" evaluation="equal">
+                  <data type="Boolean">true</data>
+               </feature>
+            </dependency>
+            <dependency resourceType="SWComponent" resourceId="platform.drivers.uart" description="Unsupported version of the UART Driver in the toolchain/IDE project. Required: ${required_value}, actual: ${actual_value}. Project might not compile correctly." problem_level="1" source="Peripherals">
+               <feature name="version" evaluation="equivalent">
+                  <data type="Version">2.5.1</data>
                </feature>
             </dependency>
          </dependencies>
@@ -940,24 +969,59 @@
                         <data type="Frequency" unit="Hz">0</data>
                      </feature>
                   </dependency>
-                  <dependency resourceType="ClockOutput" resourceId="Bus_clock" description="Bus clock is inactive." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
-                     <feature name="frequency" evaluation="greaterThan">
-                        <data type="Frequency" unit="Hz">0</data>
-                     </feature>
-                  </dependency>
-                  <dependency resourceType="ClockOutput" resourceId="Bus_clock" description="Bus clock is inactive." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
-                     <feature name="frequency" evaluation="greaterThan">
-                        <data type="Frequency" unit="Hz">0</data>
-                     </feature>
-                  </dependency>
-                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="FTM0.tmr_ch.0" description="Signal CH0 of peripheral FTM0 is not routed" problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="I2S0.i2s_txd0" description="I2S0.TX DATA (0) pin needs to be routed" problem_level="1" source="Peripherals:BOARD_InitPeripherals">
                      <feature name="routed" evaluation="equal">
                         <data type="Boolean">true</data>
                      </feature>
                   </dependency>
-                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="FTM0.tmr_ch.0" description="Direction of signal CH0 of peripheral FTM0 is set as input but it will be used as output" problem_level="1" source="Peripherals:BOARD_InitPeripherals">
-                     <feature name="direction" evaluation="notEqualIgnoreCase">
-                        <data type="String">INPUT</data>
+                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="I2S0.i2s_rxd0" description="I2S0.RX DATA (0) pin needs to be routed" problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="routed" evaluation="equal">
+                        <data type="Boolean">true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="I2S0.i2s_rclk" description="I2S0.RX BCLK pin needs to be routed" problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="routed" evaluation="equal">
+                        <data type="Boolean">true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="I2S0.i2s_rfs" description="I2S0.RX SYNC pin needs to be routed" problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="routed" evaluation="equal">
+                        <data type="Boolean">true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.sai_edma" description="The fsl_sai_edma driver is missing in the project (required for the eDMA mode)." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="enabled" evaluation="equal">
+                        <data type="Boolean">true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.sai_edma" description="The compatible version of the fsl_sai_edma driver is not available in the project (required for the eDMA mode)." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="version" evaluation="compatible">
+                        <data type="Version">2.1.5</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="ClockOutput" resourceId="System_clock" description="System clock is inactive." problem_level="2" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="frequency" evaluation="greaterThan">
+                        <data type="Frequency" unit="Hz">0</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.dmamux" description="The fsl_dmamux driver is missing in the project (required for the eDMA)." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="enabled" evaluation="equal">
+                        <data type="Boolean">true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.dmamux" description="The compatible version of the fsl_dmamux driver is not available in the project (required for the eDMA)." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="version" evaluation="compatible">
+                        <data type="Version">2.0.2</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="ClockOutput" resourceId="System_clock" description="System clock is inactive." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="frequency" evaluation="greaterThan">
+                        <data type="Frequency" unit="Hz">0</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="UART0.uart_tx" description="Signal TX of the peripheral UART0 is not routed." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="routed" evaluation="equal">
+                        <data type="Boolean">true</data>
                      </feature>
                   </dependency>
                </dependencies>
@@ -981,24 +1045,24 @@
                         </struct>
                      </config_set>
                   </instance>
-                  <instance name="I2S0" uuid="01abc257-c0c7-4314-933b-8b55f8ff3a25" type="sai" type_id="sai_37a0d4b4ecc2db8ea149dbe2026c6550" mode="interrupts" peripheral="I2S0" enabled="false" comment="" custom_name_enabled="false" editing_lock="false">
+                  <instance name="I2S0" uuid="01abc257-c0c7-4314-933b-8b55f8ff3a25" type="sai" type_id="sai_37a0d4b4ecc2db8ea149dbe2026c6550" mode="edma" peripheral="I2S0" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
                      <config_set name="fsl_sai">
                         <struct name="mclk_config">
                            <setting name="masterClockSource" value="kSAI_MclkSourceSysclk"/>
                            <setting name="masterClockSourceFreq" value="BOARD_BootClockRUN"/>
-                           <setting name="masterClockFrequency" value="1.024 MHz"/>
+                           <setting name="masterClockFrequency" value="8.192 MHz"/>
                            <setting name="init_mclk_config" value="true"/>
                         </struct>
                         <struct name="sai_master_clock"/>
                         <setting name="usage" value="record_playback"/>
                         <array name="signal_config">
                            <struct name="0">
-                              <setting name="sourceTx" value="Tx"/>
-                              <setting name="sourceRx" value="Tx"/>
+                              <setting name="sourceTx" value="Rx"/>
+                              <setting name="sourceRx" value="Rx"/>
                            </struct>
                            <struct name="1">
-                              <setting name="sourceTx" value="Tx"/>
-                              <setting name="sourceRx" value="Tx"/>
+                              <setting name="sourceTx" value="Rx"/>
+                              <setting name="sourceRx" value="Rx"/>
                            </struct>
                         </array>
                         <struct name="syncSwapI"/>
@@ -1011,17 +1075,18 @@
                               <struct name="sai_transceiver">
                                  <struct name="bitClock">
                                     <setting name="modeM" value="master"/>
-                                    <setting name="bitClockSource" value="kSAI_BclkSourceMclkDiv"/>
-                                    <setting name="bclkPolarityM" value="kSAI_PolarityActiveLow"/>
+                                    <setting name="bitClockSource" value="kSAI_BclkSourceBusclk"/>
+                                    <setting name="bitClockSourceFreq" value="BOARD_BootClockRUN"/>
+                                    <setting name="bclkPolarityM" value="kSAI_PolarityActiveHigh"/>
                                     <setting name="bclkInputDelayM" value="false"/>
                                  </struct>
                                  <struct name="frameSync">
                                     <setting name="modeM" value="master"/>
-                                    <setting name="frameSyncWidthM" value="16"/>
-                                    <setting name="frameSyncPolarityM" value="kSAI_PolarityActiveLow"/>
-                                    <setting name="frameSyncEarlyM" value="true"/>
+                                    <setting name="frameSyncWidthM" value="1"/>
+                                    <setting name="frameSyncPolarityM" value="kSAI_PolarityActiveHigh"/>
+                                    <setting name="frameSyncEarlyM" value="false"/>
                                  </struct>
-                                 <setting name="sampleRate_Hz" value="kSAI_SampleRate16KHz"/>
+                                 <setting name="sampleRate_Hz" value="kSAI_SampleRate32KHz"/>
                                  <set name="channelMask">
                                     <selected>
                                        <id>kSAI_Channel0Mask</id>
@@ -1029,9 +1094,9 @@
                                  </set>
                                  <struct name="serialData">
                                     <setting name="differentFirstWord" value="false"/>
-                                    <setting name="sameDataWordLengthM" value="kSAI_WordWidth16bits"/>
+                                    <setting name="sameDataWordLengthM" value="kSAI_WordWidth32bits"/>
                                     <setting name="dataOrder" value="kSAI_DataMSB"/>
-                                    <setting name="dataFirstBitShiftedM" value="16"/>
+                                    <setting name="dataFirstBitShiftedM" value="32"/>
                                     <setting name="dataWordNumM" value="2"/>
                                     <struct name="dataMasked_config">
                                        <array name="dataMasked_L">
@@ -1073,18 +1138,30 @@
                                     </struct>
                                  </struct>
                                  <struct name="fifo">
-                                    <setting name="fifoWatermarkM" value="16"/>
+                                    <setting name="fifoWatermarkM" value="6"/>
                                  </struct>
                               </struct>
-                              <set name="interrupt_sel">
-                                 <selected/>
-                              </set>
-                              <struct name="interrupt">
-                                 <setting name="IRQn" value="I2S0_Tx_IRQn"/>
-                                 <setting name="enable_interrrupt" value="enabled"/>
-                                 <setting name="enable_priority" value="false"/>
-                                 <setting name="priority" value="0"/>
-                                 <setting name="enable_custom_name" value="false"/>
+                              <struct name="edma_group">
+                                 <setting name="enable_edma_channel" value="true"/>
+                                 <struct name="edma_channel">
+                                    <setting name="uid" value="1650037218855"/>
+                                    <setting name="eDMAn" value="1"/>
+                                    <setting name="eDMA_source" value="kDmaRequestMux0I2S0Tx"/>
+                                    <setting name="enableTriggerPIT" value="false"/>
+                                    <setting name="init_channel_priority" value="false"/>
+                                    <struct name="edma_channel_Preemption">
+                                       <setting name="enableChannelPreemption" value="false"/>
+                                       <setting name="enablePreemptAbility" value="false"/>
+                                       <setting name="channelPriority" value="0"/>
+                                    </struct>
+                                    <setting name="enable_custom_name" value="false"/>
+                                 </struct>
+                                 <struct name="sai_edma_handle">
+                                    <setting name="enable_custom_name" value="false"/>
+                                    <setting name="init_callback" value="true"/>
+                                    <setting name="callback_fcn" value="I2S_TX_eDMA_callback"/>
+                                    <setting name="user_data" value=""/>
+                                 </struct>
                               </struct>
                            </struct>
                            <struct name="rx_group">
@@ -1097,11 +1174,11 @@
                                  </struct>
                                  <struct name="frameSync">
                                     <setting name="modeM" value="master"/>
-                                    <setting name="frameSyncWidthM" value="16"/>
-                                    <setting name="frameSyncPolarityM" value="kSAI_PolarityActiveLow"/>
+                                    <setting name="frameSyncWidthM" value="32"/>
+                                    <setting name="frameSyncPolarityM" value="kSAI_PolarityActiveHigh"/>
                                     <setting name="frameSyncEarlyM" value="true"/>
                                  </struct>
-                                 <setting name="sampleRate_Hz" value="kSAI_SampleRate16KHz"/>
+                                 <setting name="sampleRate_Hz" value="kSAI_SampleRate32KHz"/>
                                  <set name="channelMask">
                                     <selected>
                                        <id>kSAI_Channel0Mask</id>
@@ -1109,9 +1186,9 @@
                                  </set>
                                  <struct name="serialData">
                                     <setting name="differentFirstWord" value="false"/>
-                                    <setting name="sameDataWordLengthM" value="kSAI_WordWidth16bits"/>
+                                    <setting name="sameDataWordLengthM" value="kSAI_WordWidth32bits"/>
                                     <setting name="dataOrder" value="kSAI_DataMSB"/>
-                                    <setting name="dataFirstBitShiftedM" value="16"/>
+                                    <setting name="dataFirstBitShiftedM" value="32"/>
                                     <setting name="dataWordNumM" value="2"/>
                                     <struct name="dataMasked_config">
                                        <array name="dataMasked_L">
@@ -1153,104 +1230,183 @@
                                     </struct>
                                  </struct>
                                  <struct name="fifo">
-                                    <setting name="fifoWatermarkM" value="16"/>
+                                    <setting name="fifoWatermarkM" value="2"/>
                                  </struct>
                               </struct>
-                              <set name="interrupt_sel">
-                                 <selected/>
-                              </set>
-                              <struct name="interrupt">
-                                 <setting name="IRQn" value="I2S0_Rx_IRQn"/>
-                                 <setting name="enable_interrrupt" value="enabled"/>
-                                 <setting name="enable_priority" value="false"/>
-                                 <setting name="priority" value="0"/>
-                                 <setting name="enable_custom_name" value="false"/>
+                              <struct name="edma_group">
+                                 <setting name="enable_edma_channel" value="true"/>
+                                 <struct name="edma_channel">
+                                    <setting name="uid" value="1650037218857"/>
+                                    <setting name="eDMAn" value="0"/>
+                                    <setting name="eDMA_source" value="kDmaRequestMux0I2S0Rx"/>
+                                    <setting name="enableTriggerPIT" value="false"/>
+                                    <setting name="init_channel_priority" value="false"/>
+                                    <struct name="edma_channel_Preemption">
+                                       <setting name="enableChannelPreemption" value="false"/>
+                                       <setting name="enablePreemptAbility" value="false"/>
+                                       <setting name="channelPriority" value="0"/>
+                                    </struct>
+                                    <setting name="enable_custom_name" value="false"/>
+                                 </struct>
+                                 <struct name="sai_edma_handle">
+                                    <setting name="enable_custom_name" value="false"/>
+                                    <setting name="init_callback" value="true"/>
+                                    <setting name="callback_fcn" value="I2S_RX_eDMA_callback"/>
+                                    <setting name="user_data" value=""/>
+                                 </struct>
                               </struct>
                            </struct>
                         </struct>
                      </config_set>
                   </instance>
-                  <instance name="FTM0" uuid="2315aa9b-32a5-4c50-b03e-7901d579ad52" type="ftm" type_id="ftm_a206ca22312775f3c8a462078188c129" mode="EdgeAligned" peripheral="FTM0" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
-                     <config_set name="ftm_main_config">
-                        <struct name="ftm_config">
-                           <setting name="clockSource" value="kFTM_SystemClock"/>
-                           <setting name="clockSourceFreq" value="GetFreq"/>
-                           <setting name="timerPrescaler" value="1"/>
-                           <setting name="timerOutputFrequency" value="16.384 MHz"/>
-                           <setting name="systemClockSource" value="BusInterfaceClock"/>
-                           <setting name="systemClockSourceFreq" value="mirrored_value"/>
-                           <setting name="faultMode" value="kFTM_Fault_Disable"/>
-                           <setting name="inputFilterPeriod" value="1"/>
-                           <array name="faultInputs">
-                              <struct name="0">
-                                 <setting name="enableFaultInput" value="false"/>
-                                 <setting name="faultLevelVal" value="low"/>
-                                 <setting name="useFaultFilter" value="false"/>
-                              </struct>
-                              <struct name="1">
-                                 <setting name="enableFaultInput" value="false"/>
-                                 <setting name="faultLevelVal" value="low"/>
-                                 <setting name="useFaultFilter" value="false"/>
-                              </struct>
-                              <struct name="2">
-                                 <setting name="enableFaultInput" value="false"/>
-                                 <setting name="faultLevelVal" value="low"/>
-                                 <setting name="useFaultFilter" value="false"/>
-                              </struct>
-                              <struct name="3">
-                                 <setting name="enableFaultInput" value="false"/>
-                                 <setting name="faultLevelVal" value="low"/>
-                                 <setting name="useFaultFilter" value="false"/>
-                              </struct>
-                           </array>
-                           <setting name="deadTimePrescale" value="kFTM_Deadtime_Prescale_1"/>
-                           <setting name="deadTimePeriod" value="0"/>
-                           <set name="pwmSyncMode">
-                              <selected>
-                                 <id>kFTM_SoftwareTrigger</id>
-                              </selected>
-                           </set>
-                           <set name="reloadPoints">
-                              <selected/>
-                           </set>
-                           <set name="extTriggers">
-                              <selected/>
-                           </set>
-                           <set name="chnlInitState">
-                              <selected/>
-                           </set>
-                           <set name="chnlPolarity">
-                              <selected/>
-                           </set>
-                           <setting name="bdmMode" value="kFTM_BdmMode_0"/>
-                           <setting name="useGlobalTimeBase" value="false"/>
+                  <instance name="DMA" uuid="bdd5330c-d9a1-449c-ac83-f77c1d6a2ce7" type="edma" type_id="edma_6d0dd4e17e2f179c7d42d98767129ede" mode="basic" peripheral="DMA" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
+                     <config_set name="fsl_edma">
+                        <struct name="common_settings">
+                           <setting name="enableContinuousLinkMode" value="false"/>
+                           <setting name="enableHaltOnError" value="true"/>
+                           <setting name="enableRoundRobinArbitration" value="false"/>
+                           <setting name="enableDebugMode" value="false"/>
                         </struct>
-                        <set name="timer_interrupts">
+                        <array name="dma_table">
+                           <struct name="0"/>
+                           <struct name="1"/>
+                        </array>
+                        <array name="edma_channels"/>
+                        <struct name="errInterruptConfig">
+                           <setting name="enableErrInterrupt" value="false"/>
+                           <struct name="errorInterrupt">
+                              <setting name="IRQn" value="DMA_Error_IRQn"/>
+                              <setting name="enable_interrrupt" value="enabled"/>
+                              <setting name="enable_priority" value="false"/>
+                              <setting name="priority" value="0"/>
+                              <setting name="enable_custom_name" value="false"/>
+                           </struct>
+                        </struct>
+                     </config_set>
+                  </instance>
+                  <instance name="UART0" uuid="ba9a764c-03ef-48db-be32-9bd6a0ee6bf5" type="uart" type_id="uart_9b45c456566d03f79ecfe90751c10bb4" mode="polling" peripheral="UART0" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
+                     <config_set name="uartConfig_t">
+                        <struct name="uartConfig">
+                           <setting name="clockSource" value="BusInterfaceClock"/>
+                           <setting name="clockSourceFreq" value="GetFreq"/>
+                           <setting name="baudRate_Bps" value="115200"/>
+                           <setting name="parityMode" value="kUART_ParityDisabled"/>
+                           <setting name="stopBitCount" value="kUART_OneStopBit"/>
+                           <setting name="txFifoWatermark" value="0"/>
+                           <setting name="rxFifoWatermark" value="1"/>
+                           <setting name="idleType" value="kUART_IdleTypeStartBit"/>
+                           <setting name="enableTx" value="true"/>
+                           <setting name="enableRx" value="false"/>
+                        </struct>
+                     </config_set>
+                  </instance>
+                  <instance name="DAC0" uuid="70bcc08d-a5f8-403a-9fcf-e5e8c9b15627" type="dac" type_id="dac_a54f338a6fa6fd273bc89d61f5a3b85e" mode="buffered" peripheral="DAC0" enabled="false" comment="" custom_name_enabled="false" editing_lock="false">
+                     <config_set name="fsl_dac" quick_selection="QS_DAC_1">
+                        <struct name="dac_config">
+                           <setting name="referenceVoltageSource" value="kDAC_ReferenceVoltageSourceVref2"/>
+                           <setting name="enableLowPowerMode" value="false"/>
+                        </struct>
+                        <setting name="dac_enable" value="true"/>
+                     </config_set>
+                     <config_set name="buffered_dac">
+                        <setting name="dac_enable_buffer" value="true"/>
+                        <struct name="dac_buffer_config">
+                           <setting name="triggerMode" value="kDAC_BufferTriggerByHardwareMode"/>
+                           <setting name="watermark" value="kDAC_BufferWatermark1Word"/>
+                           <setting name="workMode" value="kDAC_BufferWorkAsNormalMode"/>
+                        </struct>
+                        <array name="dac_data_buffer">
+                           <setting name="0" value="0"/>
+                        </array>
+                        <setting name="dac_buffer_read_pointer" value="0"/>
+                        <set name="dac_buffer_interrupt_enable">
                            <selected/>
                         </set>
-                        <setting name="enable_irq" value="false"/>
-                        <struct name="ftm_interrupt">
-                           <setting name="IRQn" value="FTM0_IRQn"/>
+                        <setting name="enable_interrupt" value="false"/>
+                        <struct name="dac_interrupt">
+                           <setting name="IRQn" value="DAC0_IRQn"/>
                            <setting name="enable_interrrupt" value="enabled"/>
                            <setting name="enable_priority" value="false"/>
                            <setting name="priority" value="0"/>
                            <setting name="enable_custom_name" value="false"/>
                         </struct>
-                        <setting name="EnableTimerInInit" value="true"/>
                      </config_set>
-                     <config_set name="ftm_edge_aligned_mode" quick_selection="outputCompare">
-                        <array name="ftm_edge_aligned_channels_config">
+                  </instance>
+                  <instance name="ADC0" uuid="e5ae5aad-8e01-49d5-a301-6a2a2f232a96" type="adc16" type_id="adc16_897558f9b7366ed198de18c33097d7d2" mode="ADC" peripheral="ADC0" enabled="false" comment="" custom_name_enabled="false" editing_lock="false">
+                     <config_set name="fsl_adc16" quick_selection="QS_ADC16_1">
+                        <struct name="adc16_config">
+                           <setting name="referenceVoltageSource" value="kADC16_ReferenceVoltageSourceVref"/>
+                           <setting name="clockSource" value="kADC16_ClockSourceAsynchronousClock"/>
+                           <setting name="enableAsynchronousClock" value="true"/>
+                           <setting name="clockDivider" value="kADC16_ClockDivider8"/>
+                           <setting name="resolution" value="kADC16_ResolutionSE12Bit"/>
+                           <setting name="longSampleMode" value="kADC16_LongSampleDisabled"/>
+                           <setting name="hardwareAverageMode" value="kADC16_HardwareAverageDisabled"/>
+                           <setting name="enableHighSpeed" value="false"/>
+                           <setting name="enableLowPower" value="false"/>
+                           <setting name="enableContinuousConversion" value="false"/>
+                        </struct>
+                        <setting name="adc16_channel_mux_mode" value="kADC16_ChannelMuxA"/>
+                        <struct name="adc16_hardware_compare_config">
+                           <setting name="hardwareCompareModeEnable" value="false"/>
+                        </struct>
+                        <setting name="doAutoCalibration" value="false"/>
+                        <setting name="offset" value="0"/>
+                        <setting name="trigger" value="false"/>
+                        <setting name="enable_dma" value="false"/>
+                        <setting name="enable_irq" value="false"/>
+                        <struct name="adc_interrupt">
+                           <setting name="IRQn" value="ADC0_IRQn"/>
+                           <setting name="enable_interrrupt" value="enabled"/>
+                           <setting name="enable_priority" value="false"/>
+                           <setting name="priority" value="0"/>
+                           <setting name="enable_custom_name" value="false"/>
+                        </struct>
+                        <array name="adc16_channels_config"/>
+                     </config_set>
+                  </instance>
+                  <instance name="PDB0" uuid="7a9fd45d-5a6d-48b4-a991-87b31519a0b6" type="pdb" type_id="pdb_32eb8756416d042c4a30e2cf9bd8fca4" mode="general" peripheral="PDB0" enabled="false" comment="" custom_name_enabled="false" editing_lock="false">
+                     <config_set name="fsl_pdb">
+                        <struct name="clockConfig">
+                           <setting name="clockSource" value="BusInterfaceClock"/>
+                           <setting name="clockSourceFreq" value="BOARD_BootClockRUN"/>
+                        </struct>
+                        <struct name="pdb_config">
+                           <setting name="loadValueMode" value="kPDB_LoadValueImmediately"/>
+                           <setting name="firstDivider" value="kPDB_PrescalerDivider1"/>
+                           <setting name="secondDivider" value="kPDB_DividerMultiplicationFactor1"/>
+                           <setting name="moduloValue_str" value="31.25 us"/>
+                           <setting name="triggerInputSource" value="kPDB_TriggerSoftware"/>
+                           <setting name="initSWtrigger" value="false"/>
+                           <setting name="enableContinuousMode" value="false"/>
+                        </struct>
+                        <array name="pdb_adc_triggering_config"/>
+                        <array name="pdb_dac_triggering_config">
                            <struct name="0">
-                              <setting name="channelId" value="Output_compare"/>
-                              <setting name="edge_aligned_mode" value="kFTM_OutputCompare"/>
-                              <struct name="output_compare">
-                                 <setting name="chnNumber" value="kFTM_Chnl_0"/>
-                                 <setting name="output_compare_mode" value="kFTM_ToggleOnMatch"/>
-                                 <setting name="compareValueStr" value="0"/>
-                                 <setting name="enable_chan_irq" value="false"/>
-                              </struct>
+                              <setting name="pdb_dac_triggered_device" value="DAC0"/>
+                              <setting name="enable" value="true"/>
+                              <setting name="outputSource" value="interval"/>
+                              <setting name="intervalValue_str" value="31.25 us"/>
                            </struct>
                         </array>
+                        <array name="pdb_pulse_out_config"/>
+                        <struct name="pdb_delay_interrupt_config">
+                           <setting name="actionAfterDelay" value="noAction"/>
+                           <setting name="delayValue_str" value=""/>
+                        </struct>
+                        <struct name="pdb_interrupts_config">
+                           <set name="interrupt_sel">
+                              <selected/>
+                           </set>
+                           <setting name="enable_irq" value="false"/>
+                           <struct name="interrupt">
+                              <setting name="IRQn" value="PDB0_IRQn"/>
+                              <setting name="enable_interrrupt" value="enabled"/>
+                              <setting name="enable_priority" value="false"/>
+                              <setting name="priority" value="0"/>
+                              <setting name="enable_custom_name" value="false"/>
+                           </struct>
+                        </struct>
                      </config_set>
                   </instance>
                </instances>

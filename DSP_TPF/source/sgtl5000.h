@@ -45,6 +45,13 @@
 #define SGTL5000_CHIP_DAP_MAIN_CHAN             0x0120
 #define SGTL5000_CHIP_DAP_CTRL                  0x0100
 
+#define SGTL5000_DAP_AVC_THRESHOLD				0x0126
+#define SGTL5000_DAP_AVC_ATTACK					0x0128
+#define SGTL5000_DAP_AVC_DECAY					0x012A
+
+
+
+
 #ifndef MAIN_INCLUDE
 #define MAIN_INCLUDE
 
@@ -59,12 +66,19 @@
 #endif
 
 #define I2C_SLAVE_ADDR 0x0A
-#define WAIT_TIME 10U
+#define WAIT_TIME 100U
 
 uint16_t sgtl5000_read_register(uint16_t addr);
 void sgtl5000_write_register(uint16_t wBuff, uint16_t addr);
 void sgtl5000_modify_register(uint16_t addr, uint16_t newBits, uint8_t bitLen, uint8_t bitShift);
 void sgtl5000_RW_test();
 void sgtl5000_power_up();
+void sgtl5000_IO_routing();
+void sgtl5000_volume_setup();
+void sgtl5000_clk_setup();
+void sgtl5000_dap_setup();
+void sgtl5000_i2s_setup();
+void sgtl5000_init_Line_in_HP_out_32K();
+void sgtl5000_init_Line_in_AVC_HP_out_32K();
 
 #endif /* SGTL5000_H_ */

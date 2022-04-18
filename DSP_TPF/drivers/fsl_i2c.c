@@ -1037,8 +1037,7 @@ status_t I2C_MasterWriteBlocking(I2C_Type *base, const uint8_t *txBuff, size_t t
     while (0U != (txSize--))
     {
         /* Send a byte of data. */
-        base->D = *txBuff;
-        txBuff++;
+        base->D = *txBuff++;
 
 #if I2C_RETRY_TIMES != 0U
         waitTimes = I2C_RETRY_TIMES;

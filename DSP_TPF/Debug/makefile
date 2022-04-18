@@ -17,6 +17,16 @@ RM := rm -rf
 -include component/serial_manager/subdir.mk
 -include component/lists/subdir.mk
 -include board/subdir.mk
+-include CMSIS/DSP/Source/TransformFunctions/subdir.mk
+-include CMSIS/DSP/Source/SupportFunctions/subdir.mk
+-include CMSIS/DSP/Source/StatisticsFunctions/subdir.mk
+-include CMSIS/DSP/Source/MatrixFunctions/subdir.mk
+-include CMSIS/DSP/Source/FilteringFunctions/subdir.mk
+-include CMSIS/DSP/Source/FastMathFunctions/subdir.mk
+-include CMSIS/DSP/Source/ControllerFunctions/subdir.mk
+-include CMSIS/DSP/Source/ComplexMathFunctions/subdir.mk
+-include CMSIS/DSP/Source/CommonTables/subdir.mk
+-include CMSIS/DSP/Source/BasicMathFunctions/subdir.mk
 -include subdir.mk
 -include objects.mk
 
@@ -37,7 +47,7 @@ all: DSP_TPF.axf
 DSP_TPF.axf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU Linker'
-	arm-none-eabi-gcc -nostdlib -Xlinker -Map="DSP_TPF.map" -Xlinker --gc-sections -Xlinker -print-memory-usage -Xlinker --sort-section=alignment -Xlinker --cref -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -T MK64F12_Project_Debug.ld -o "DSP_TPF.axf" $(OBJS) $(USER_OBJS) $(LIBS)
+	arm-none-eabi-gcc -nostdlib -L"C:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\CMSIS\DSP" -Xlinker -Map="DSP_TPF.map" -Xlinker --gc-sections -Xlinker -print-memory-usage -Xlinker --sort-section=alignment -Xlinker --cref -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -T MK64F12_Project_Debug.ld -o "DSP_TPF.axf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build

@@ -25,14 +25,27 @@ extern "C" {
  */
 void BOARD_InitBootPins(void);
 
-/*! @name PORTC1 (number 71), J1[5]
+/*! @name PORTC7 (number 79), J1[13]
   @{ */
 
 /* Symbols to be used with PORT driver */
-#define BOARD_FTM_CLK_PORT PORTC               /*!<@brief PORT peripheral base pointer */
-#define BOARD_FTM_CLK_PIN 1U                   /*!<@brief PORT pin number */
-#define BOARD_FTM_CLK_PIN_MASK (1U << 1U)      /*!<@brief PORT pin mask */
-                                               /* @} */
+#define BOARD_CMP0_IN1_PORT PORTC               /*!<@brief PORT peripheral base pointer */
+#define BOARD_CMP0_IN1_PIN 7U                   /*!<@brief PORT pin number */
+#define BOARD_CMP0_IN1_PIN_MASK (1U << 7U)      /*!<@brief PORT pin mask */
+                                                /* @} */
+
+/*! @name PORTA1 (number 35), J1[8]
+  @{ */
+
+/* Symbols to be used with GPIO driver */
+#define BOARD_GPIO_pin_GPIO GPIOA               /*!<@brief GPIO peripheral base pointer */
+#define BOARD_GPIO_pin_GPIO_PIN_MASK (1U << 1U) /*!<@brief GPIO pin mask */
+
+/* Symbols to be used with PORT driver */
+#define BOARD_GPIO_pin_PORT PORTA               /*!<@brief PORT peripheral base pointer */
+#define BOARD_GPIO_pin_PIN 1U                   /*!<@brief PORT pin number */
+#define BOARD_GPIO_pin_PIN_MASK (1U << 1U)      /*!<@brief PORT pin mask */
+                                                /* @} */
 
 /*!
  * @brief Configures pin routing and optionally pin electrical features.
