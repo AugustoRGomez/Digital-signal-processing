@@ -17,6 +17,10 @@
 #include "fsl_sai_edma.h"
 #include "fsl_clock.h"
 #include "fsl_uart.h"
+#include "fsl_adc16.h"
+#include "fsl_pit.h"
+#include "fsl_gpio.h"
+#include "fsl_port.h"
 
 #if defined(__cplusplus)
 extern "C" {
@@ -79,6 +83,59 @@ extern "C" {
 #define UART0_PERIPHERAL UART0
 /* Definition of the clock source frequency */
 #define UART0_CLOCK_SOURCE CLOCK_GetFreq(UART0_CLK_SRC)
+/* Alias for ADC0 peripheral */
+#define ADC0_PERIPHERAL ADC0
+/* ADC0 interrupt vector ID (number). */
+#define ADC0_IRQN ADC0_IRQn
+/* ADC0 interrupt handler identifier. */
+#define ADC0_IRQHANDLER ADC0_IRQHandler
+/* Channel 0 (SE.0) conversion control group. */
+#define ADC0_CH0_CONTROL_GROUP 0
+/* Channel 1 (SE.1) conversion control group. */
+#define ADC0_CH1_CONTROL_GROUP 0
+/* BOARD_InitPeripherals defines for PIT */
+/* Definition of peripheral ID. */
+#define PIT_PERIPHERAL PIT
+/* Definition of clock source. */
+#define PIT_CLOCK_SOURCE kCLOCK_BusClk
+/* Definition of clock source frequency. */
+#define PIT_CLK_FREQ CLOCK_GetFreq(PIT_CLOCK_SOURCE)
+/* Definition of ticks count for channel 0 - deprecated. */
+#define PIT_0_TICKS USEC_TO_COUNT(5000U, PIT_CLK_FREQ) - 1U
+/* Definition of ticks count for channel 1 - deprecated. */
+#define PIT_1_TICKS USEC_TO_COUNT(1000U, PIT_CLK_FREQ) - 1U
+/* PIT interrupt vector ID (number) - deprecated. */
+#define PIT_0_IRQN PIT0_IRQn
+/* PIT interrupt handler identifier - deprecated. */
+#define PIT_0_IRQHANDLER PIT0_IRQHandler
+/* PIT interrupt vector ID (number) - deprecated. */
+#define PIT_1_IRQN PIT1_IRQn
+/* PIT interrupt handler identifier - deprecated. */
+#define PIT_1_IRQHANDLER PIT1_IRQHandler
+/* Definition of channel number for channel 0. */
+#define PIT_CHANNEL_0 kPIT_Chnl_0
+/* Definition of channel number for channel 1. */
+#define PIT_CHANNEL_1 kPIT_Chnl_1
+/* Definition of ticks count for channel 0. */
+#define PIT_CHANNEL_0_TICKS USEC_TO_COUNT(5000U, PIT_CLK_FREQ) - 1U
+/* Definition of ticks count for channel 1. */
+#define PIT_CHANNEL_1_TICKS USEC_TO_COUNT(1000U, PIT_CLK_FREQ) - 1U
+/* PIT interrupt vector ID (number). */
+#define PIT_CHANNEL_0_IRQN PIT0_IRQn
+/* PIT interrupt handler identifier. */
+#define PIT_CHANNEL_0_IRQHANDLER PIT0_IRQHandler
+/* PIT interrupt vector ID (number). */
+#define PIT_CHANNEL_1_IRQN PIT1_IRQn
+/* PIT interrupt handler identifier. */
+#define PIT_CHANNEL_1_IRQHANDLER PIT1_IRQHandler
+/* Alias for GPIOC peripheral */
+#define GPIOC_GPIO GPIOC
+/* Alias for PORTC */
+#define GPIOC_PORT PORTC
+/* GPIOC interrupt vector ID (number). */
+#define GPIOC_IRQN PORTC_IRQn
+/* GPIOC interrupt handler identifier. */
+#define GPIOC_IRQHANDLER PORTC_IRQHandler
 
 /***********************************************************************************************************************
  * Global variables
@@ -92,6 +149,10 @@ extern edma_handle_t I2S0_RX_Handle;
 extern sai_edma_handle_t I2S0_SAI_Tx_eDMA_Handle;
 extern sai_edma_handle_t I2S0_SAI_Rx_eDMA_Handle;
 extern const uart_config_t UART0_config;
+extern adc16_channel_config_t ADC0_channelsConfig[2];
+extern const adc16_config_t ADC0_config;
+extern const adc16_channel_mux_mode_t ADC0_muxMode;
+extern const pit_config_t PIT_config;
 
 /***********************************************************************************************************************
  * Callback functions

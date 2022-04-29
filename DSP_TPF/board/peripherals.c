@@ -105,7 +105,11 @@ instance:
 - peripheral: 'NVIC'
 - config_sets:
   - nvic:
-    - interrupt_table: []
+    - interrupt_table:
+      - 0: []
+      - 1: []
+      - 2: []
+      - 3: []
     - interrupts: []
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 /* clang-format on */
@@ -247,7 +251,7 @@ instance:
         - edma_group:
           - enable_edma_channel: 'true'
           - edma_channel:
-            - uid: '1650037218855'
+            - uid: '1651179028756'
             - eDMAn: '1'
             - eDMA_source: 'kDmaRequestMux0I2S0Tx'
             - enableTriggerPIT: 'false'
@@ -322,7 +326,7 @@ instance:
         - edma_group:
           - enable_edma_channel: 'true'
           - edma_channel:
-            - uid: '1650037218857'
+            - uid: '1651179028757'
             - eDMAn: '0'
             - eDMA_source: 'kDmaRequestMux0I2S0Rx'
             - enableTriggerPIT: 'false'
@@ -489,6 +493,204 @@ static void UART0_init(void) {
 }
 
 /***********************************************************************************************************************
+ * ADC0 initialization code
+ **********************************************************************************************************************/
+/* clang-format off */
+/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+instance:
+- name: 'ADC0'
+- type: 'adc16'
+- mode: 'ADC'
+- custom_name_enabled: 'false'
+- type_id: 'adc16_897558f9b7366ed198de18c33097d7d2'
+- functional_group: 'BOARD_InitPeripherals'
+- peripheral: 'ADC0'
+- config_sets:
+  - fsl_adc16:
+    - adc16_config:
+      - referenceVoltageSource: 'kADC16_ReferenceVoltageSourceVref'
+      - clockSource: 'kADC16_ClockSourceAsynchronousClock'
+      - enableAsynchronousClock: 'true'
+      - clockDivider: 'kADC16_ClockDivider1'
+      - resolution: 'kADC16_ResolutionSE12Bit'
+      - longSampleMode: 'kADC16_LongSampleDisabled'
+      - hardwareAverageMode: 'kADC16_HardwareAverageCount32'
+      - enableHighSpeed: 'false'
+      - enableLowPower: 'false'
+      - enableContinuousConversion: 'false'
+    - adc16_channel_mux_mode: 'kADC16_ChannelMuxA'
+    - adc16_hardware_compare_config:
+      - hardwareCompareModeEnable: 'false'
+    - doAutoCalibration: 'false'
+    - offset: '0'
+    - trigger: 'false'
+    - enable_dma: 'false'
+    - enable_irq: 'true'
+    - adc_interrupt:
+      - IRQn: 'ADC0_IRQn'
+      - enable_interrrupt: 'enabled'
+      - enable_priority: 'false'
+      - priority: '0'
+      - enable_custom_name: 'false'
+    - adc16_channels_config:
+      - 0:
+        - channelName: ''
+        - enableDifferentialConversion: 'false'
+        - channelNumber: 'SE.0'
+        - enableInterruptOnConversionCompleted: 'true'
+        - channelGroup: '0'
+        - initializeChannel: 'true'
+      - 1:
+        - channelName: ''
+        - enableDifferentialConversion: 'false'
+        - channelNumber: 'SE.1'
+        - enableInterruptOnConversionCompleted: 'true'
+        - channelGroup: '0'
+        - initializeChannel: 'false'
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
+/* clang-format on */
+adc16_channel_config_t ADC0_channelsConfig[2] = {
+  {
+    .channelNumber = 0U,
+    .enableDifferentialConversion = false,
+    .enableInterruptOnConversionCompleted = true,
+  },
+  {
+    .channelNumber = 1U,
+    .enableDifferentialConversion = false,
+    .enableInterruptOnConversionCompleted = true,
+  }
+};
+const adc16_config_t ADC0_config = {
+  .referenceVoltageSource = kADC16_ReferenceVoltageSourceVref,
+  .clockSource = kADC16_ClockSourceAsynchronousClock,
+  .enableAsynchronousClock = true,
+  .clockDivider = kADC16_ClockDivider1,
+  .resolution = kADC16_ResolutionSE12Bit,
+  .longSampleMode = kADC16_LongSampleDisabled,
+  .hardwareAverageMode = kADC16_HardwareAverageCount32,
+  .enableHighSpeed = false,
+  .enableLowPower = false,
+  .enableContinuousConversion = false
+};
+const adc16_channel_mux_mode_t ADC0_muxMode = kADC16_ChannelMuxA;
+
+static void ADC0_init(void) {
+  /* Initialize ADC16 converter */
+  ADC16_Init(ADC0_PERIPHERAL, &ADC0_config);
+  /* Make sure, that software trigger is used */
+  ADC16_EnableHardwareTrigger(ADC0_PERIPHERAL, false);
+  /* Configure channel multiplexing mode */
+  ADC16_SetChannelMuxMode(ADC0_PERIPHERAL, ADC0_muxMode);
+  /* Initialize channel */
+  ADC16_SetChannelConfig(ADC0_PERIPHERAL, ADC0_CH0_CONTROL_GROUP, &ADC0_channelsConfig[0]);
+  /* Enable interrupt ADC0_IRQn request in the NVIC. */
+  EnableIRQ(ADC0_IRQN);
+}
+
+/***********************************************************************************************************************
+ * PIT initialization code
+ **********************************************************************************************************************/
+/* clang-format off */
+/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+instance:
+- name: 'PIT'
+- type: 'pit'
+- mode: 'LPTMR_GENERAL'
+- custom_name_enabled: 'false'
+- type_id: 'pit_a4782ba5223c8a2527ba91aeb2bc4159'
+- functional_group: 'BOARD_InitPeripherals'
+- peripheral: 'PIT'
+- config_sets:
+  - fsl_pit:
+    - enableRunInDebug: 'false'
+    - timingConfig:
+      - clockSource: 'BusInterfaceClock'
+      - clockSourceFreq: 'GetFreq'
+    - channels:
+      - 0:
+        - channel_id: 'CHANNEL_0'
+        - channelNumber: '0'
+        - enableChain: 'false'
+        - timerPeriod: '5ms'
+        - startTimer: 'false'
+        - enableInterrupt: 'true'
+        - interrupt:
+          - IRQn: 'PIT0_IRQn'
+          - enable_interrrupt: 'enabled'
+          - enable_priority: 'false'
+          - priority: '0'
+          - enable_custom_name: 'false'
+      - 1:
+        - channel_id: 'CHANNEL_1'
+        - channelNumber: '1'
+        - enableChain: 'false'
+        - timerPeriod: '1KHz'
+        - startTimer: 'true'
+        - enableInterrupt: 'true'
+        - interrupt:
+          - IRQn: 'PIT1_IRQn'
+          - enable_interrrupt: 'enabled'
+          - enable_priority: 'false'
+          - priority: '0'
+          - enable_custom_name: 'false'
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
+/* clang-format on */
+const pit_config_t PIT_config = {
+  .enableRunInDebug = false
+};
+
+static void PIT_init(void) {
+  /* Initialize the PIT. */
+  PIT_Init(PIT_PERIPHERAL, &PIT_config);
+  /* Set channel 0 period to N/A. */
+  PIT_SetTimerPeriod(PIT_PERIPHERAL, PIT_CHANNEL_0, PIT_CHANNEL_0_TICKS);
+  /* Set channel 1 period to N/A. */
+  PIT_SetTimerPeriod(PIT_PERIPHERAL, PIT_CHANNEL_1, PIT_CHANNEL_1_TICKS);
+  /* Enable interrupts from channel 0. */
+  PIT_EnableInterrupts(PIT_PERIPHERAL, PIT_CHANNEL_0, kPIT_TimerInterruptEnable);
+  /* Enable interrupts from channel 1. */
+  PIT_EnableInterrupts(PIT_PERIPHERAL, PIT_CHANNEL_1, kPIT_TimerInterruptEnable);
+  /* Enable interrupt PIT_CHANNEL_0_IRQN request in the NVIC */
+  EnableIRQ(PIT_CHANNEL_0_IRQN);
+  /* Enable interrupt PIT_CHANNEL_1_IRQN request in the NVIC */
+  EnableIRQ(PIT_CHANNEL_1_IRQN);
+  /* Start channel 1. */
+  PIT_StartTimer(PIT_PERIPHERAL, PIT_CHANNEL_1);
+}
+
+/***********************************************************************************************************************
+ * GPIOC initialization code
+ **********************************************************************************************************************/
+/* clang-format off */
+/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+instance:
+- name: 'GPIOC'
+- type: 'gpio'
+- mode: 'GPIO'
+- custom_name_enabled: 'false'
+- type_id: 'gpio_5920c5e026e8e974e6dc54fbd5e22ad7'
+- functional_group: 'BOARD_InitPeripherals'
+- peripheral: 'GPIOC'
+- config_sets:
+  - fsl_gpio:
+    - enable_irq: 'true'
+    - port_interrupt:
+      - IRQn: 'PORTC_IRQn'
+      - enable_interrrupt: 'enabled'
+      - enable_priority: 'false'
+      - priority: '0'
+      - enable_custom_name: 'false'
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
+/* clang-format on */
+
+static void GPIOC_init(void) {
+  /* Make sure, the clock gate for port C is enabled (e. g. in pin_mux.c) */
+  /* Enable interrupt PORTC_IRQn request in the NVIC. */
+  EnableIRQ(GPIOC_IRQN);
+}
+
+/***********************************************************************************************************************
  * Initialization functions
  **********************************************************************************************************************/
 void BOARD_InitPeripherals(void)
@@ -501,6 +703,9 @@ void BOARD_InitPeripherals(void)
   I2C0_init();
   I2S0_init();
   UART0_init();
+  ADC0_init();
+  PIT_init();
+  GPIOC_init();
 }
 
 /***********************************************************************************************************************

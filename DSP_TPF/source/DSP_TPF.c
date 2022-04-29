@@ -26,8 +26,6 @@
  * 	  -RX_D: J8[24]
  *	  -FS:   J8[23]
  *
- *	 NOTAS:
- *	 Los datos del ADC son SIGNADOS.
  */
 
 #ifndef MAIN_INCLUDE
@@ -41,16 +39,13 @@
 #include "MK64F12.h"
 #include "fsl_debug_console.h"
 #include "arm_math.h"
-#include "testFilter.h"
-#include "LPFilter32K.h"
 
 #endif /* MAIN_INCLUDE */
 
-/* TODO: insert other include files here. */
+/*-------------------OTHER INCLUDES---------------*/
 #include "sgtl5000.h"
 
-/* TODO: insert other definitions and declarations here. */
-/* Defines */
+/*-------------------DEFINES----------------------*/
 #define BUFF_LEN 512U
 #define BLOCKSIZE BUFF_LEN/4
 #define NUMTAPS 12U
@@ -58,16 +53,36 @@
 #define HALF_RANGE_Q31 2147483647.0f
 #define FLOAT_TO_Q31(arg) (q31_t) (HALF_RANGE_Q31 * arg)
 #define MAX_RANGE_Q31 (q31_t) 0x7FFFFFFF
+#define MAX_RANGE_UINT32 0xFFFFFFFF
 
-#define DELAY_DEPTH 3200U // DelayDepht(in Samples) = DelayInTime*SR = 100 ms * 32KHz
+#define DELAY_DEPTH 32000U
+#define MAX_DELAY 1000.0f // [ms]
+#define MIN_DELAY 10U // [ms]
+#define SAMPLE_RATE 32000.0f
 
-/* Enum & structures */
+#define IIR_FILTER_ALPHA 0.9f // 0 <= alpha <= 1
+
+#define MIN_VALUE_FB (q31_t) 0x88008000
+#define MAX_VALUE_FB (q31_t) 0x7b200000
+
+/*-------------------ENUM & STRUCT----------------*/
 typedef enum {
 	kPING,
 	kPONG,
 } buff_to_process;
 
-/* Variables */
+typedef enum {
+	kLockConfig,
+	kConfigDelayAmount,
+	kConfigDelayFb,
+} delay_config;
+
+typedef struct {
+	float32_t alpha;
+	uint32_t out;
+} iir_filter_struct;
+
+/*---------------------VARIABLES------------------*/
 q31_t pingPongIN[BUFF_LEN];
 q31_t pingPongOUT[BUFF_LEN];
 
@@ -81,39 +96,45 @@ q31_t LOutBuff[BLOCKSIZE], ROutBuff[BLOCKSIZE];
 
 q31_t LInBuffScaledD[BLOCKSIZE];
 
-q31_t delayFeedBack = FLOAT_TO_Q31(0.8f);
-int32_t delayDepth = DELAY_DEPTH;
 int32_t readIndex = 0;
 int32_t writeIndex = 0;
+q31_t delayFeedBack = FLOAT_TO_Q31(0.0f);
+uint32_t delayInMs = MIN_DELAY;
+uint32_t delayInSamples = (uint32_t) ((float32_t) MIN_DELAY * SAMPLE_RATE / 1000.0f);
 q31_t delayFifo[DELAY_DEPTH];
-q31_t delayWetLvl = FLOAT_TO_Q31(0.9f);
-q31_t delayDryLvl = FLOAT_TO_Q31(0.9f);
+q31_t delayWetLvl = MAX_RANGE_Q31; //1.0
+q31_t delayDryLvl = MAX_RANGE_Q31;
 
 buff_to_process rx_proc_buffer, tx_proc_buffer;
 
 volatile uint8_t rx_buffer_full = 0;
 volatile uint8_t tx_buffer_empty = 0;
 
-q31_t firStateR[NUMTAPS + BLOCKSIZE];
-q31_t firStateL[NUMTAPS + BLOCKSIZE];
-
-arm_fir_instance_q31 fir_instanceR;
-arm_fir_instance_q31 fir_instanceL;
-
-uint16_t readValue;
-
 sai_transfer_t rxFer, txFer;
 
 uint8_t syncFlag = 1;
+uint8_t adcMux = 0;
+delay_config configDelayParam = 0;
 
-/* Function prototypes */
+uint16_t readValue;
+uint32_t adcSampleCh0;
+uint32_t adcSampleCh1;
+
+iir_filter_struct iirFilt;
+iir_filter_struct iirFilt2;
+
+/*---------------FUNCTION PROTOTYPES--------------*/
 void debug_printf_registers();
 void process_block();
+void cook_variables();
+uint32_t single_pole_iir_filter();
 
-/* TODO: Main */
+/*---------------------TODO:MAIN------------------*/
 int main(void) {
     /* Init board hardware. */
-	BOARD_InitBootPins();
+ 	BOARD_InitBootPins();
+	BOARD_InitButtonsPins();
+	BOARD_InitLEDsPins();
 	BOARD_InitBootClocks();
 	BOARD_InitBootPeripherals();
 #ifndef BOARD_INIT_DEBUG_CONSOLE_PERIPHERAL
@@ -129,29 +150,68 @@ int main(void) {
     rxFer.data = (uint8_t *) pingIn;
     txFer.data = (uint8_t *) pingOut;
 
-    /* TEST: LP FIR filter init */
-    arm_fir_init_q31(&fir_instanceR, NUMTAPS, LPFilter32K, firStateR, BLOCKSIZE);
-    arm_fir_init_q31(&fir_instanceL, NUMTAPS, LPFilter32K, firStateL, BLOCKSIZE);
-
     /* DELAY Setup */
 //    delayDryLvl = MAX_RANGE_Q31 - delayWetLvl; // dry = 1 - wet
-    readIndex = writeIndex - delayDepth; // despues reemplazar delayDepth
+    readIndex = writeIndex - delayInSamples;
     if(readIndex < 0)
     	readIndex += DELAY_DEPTH;
 
+    /* IIR filter setup */
+    iirFilt.alpha = IIR_FILTER_ALPHA;
+    iirFilt.out = 0U;
+
+    iirFilt2.alpha = IIR_FILTER_ALPHA;
+    iirFilt2.out = 0U;
+
     /* SGTL5000 codec init */
-    sgtl5000_init_Line_in_AVC_HP_out_32K();
+    //sgtl5000_init_Line_in_AVC_HP_out_32K();
+    sgtl5000_init_MIC_in_AVC_HP_out_32K();
 
     SAI_TransferReceiveEDMA(I2S0_PERIPHERAL, &I2S0_SAI_Rx_eDMA_Handle, &rxFer);
 
+    PIT_StartTimer(PIT_PERIPHERAL, kPIT_Chnl_0);
+
     while(1) {
     	while (!(rx_buffer_full && tx_buffer_empty)) {}
+
     	GPIO_PinWrite(BOARD_GPIO_pin_GPIO, BOARD_GPIO_pin_PIN, 1U);
     	process_block();
     	GPIO_PinWrite(BOARD_GPIO_pin_GPIO, BOARD_GPIO_pin_PIN, 0U);
+
+    	if(configDelayParam == kConfigDelayAmount)
+    		PIT_SetTimerPeriod(PIT_PERIPHERAL, kPIT_Chnl_0, MSEC_TO_COUNT(delayInMs >> 1U, PIT_CLK_FREQ));
     }
 
     return 0;
+}
+
+uint32_t single_pole_iir_filter(iir_filter_struct *filter, uint32_t in) {
+	filter->out = (uint32_t) ((1.0f - filter->alpha) * (float32_t) in + (filter->alpha) * (float32_t) filter->out);
+
+	return filter->out;
+}
+
+void cook_variables() {
+	if(configDelayParam == kConfigDelayAmount) {
+		delayInMs = (uint32_t) ((float32_t) adcSampleCh0 * MAX_DELAY/4095.0f);
+		if(delayInMs < MIN_DELAY)
+			delayInMs = MIN_DELAY;
+
+		delayInSamples = (uint32_t) ((float32_t) delayInMs * SAMPLE_RATE/1000.0f);
+
+	    readIndex = writeIndex - delayInSamples;
+	    if(readIndex < 0)
+	    	readIndex += DELAY_DEPTH;
+	}
+
+	else if(configDelayParam == kConfigDelayFb) {
+		delayFeedBack = (q31_t) ((adcSampleCh1 * 1048832) ^ 0x80000000);
+
+		if(delayFeedBack > MAX_VALUE_FB)
+			delayFeedBack = MAX_VALUE_FB;
+		else if(delayFeedBack < MIN_VALUE_FB)
+			delayFeedBack = MIN_VALUE_FB;
+	}
 }
 
 void process_block() {
@@ -177,7 +237,10 @@ void process_block() {
 	 * Apply Digital Effect
 	 * TODO:
 	 * Por ahora solo L channel
+	 * WET/DRY 50/50 unicamente
 	 */
+
+	cook_variables();
 
 	/* Scale down input samples */
 	arm_scale_q31(LInBuff, FLOAT_TO_Q31(0.5f), 0U, LInBuffScaledD, BLOCKSIZE); // scale = scaleFract * 2^shift
@@ -194,7 +257,7 @@ void process_block() {
 		/* Create the wet/dry mix and write to the output buffer, dry = 1 - wet */
 		arm_mult_q31(&delayWetLvl, &y, &aux2, 1U);
 		arm_mult_q31(&delayDryLvl, &LInBuffScaledD[i], &aux3, 1U);
-		arm_add_q31(&aux2, &aux3, pTx, 1U); //delayWetLvl*y + (1.0 - delayWetLvl)*x;
+		arm_add_q31(&aux2, &aux3, pTx, 1U); // delayWetLvl*y + (1.0 - delayWetLvl)*x;
 
 		/* Copy L samples in R channel */
 		arm_copy_q31(pTx, (pTx + 1), 1U);
@@ -202,10 +265,10 @@ void process_block() {
 
 		/* Increment the pointers and wrap if necessary */
 		writeIndex++;
-		if(writeIndex >= delayDepth)
+		if(writeIndex >= DELAY_DEPTH)
 			writeIndex = 0;
 		readIndex++;
-		if(readIndex >= delayDepth)
+		if(readIndex >= DELAY_DEPTH)
 			readIndex = 0;
 	}
 
@@ -285,3 +348,127 @@ void debug_printf_registers() {
 	readValue = sgtl5000_read_register(SGTL5000_CHIP_DAC_VOL);
 	PRINTF("get sgtl5000 SGTL5000_CHIP_DAC_VOL: %x\n", readValue);
 }
+
+/* ADC0_IRQn interrupt handler */
+void ADC0_IRQHANDLER(void) {
+  /* Array of result values*/
+  uint32_t result_values[2] = {0};
+
+  /* Get flags for each group */
+  for ( int i=0; i<2; i++){
+  uint32_t status = ADC16_GetChannelStatusFlags(ADC0_PERIPHERAL, i);
+  	if ( status == kADC16_ChannelConversionDoneFlag){
+  		result_values[i] = ADC16_GetChannelConversionValue(ADC0_PERIPHERAL, i);
+  	}
+  }
+
+  /* Place your code here */
+  if(!adcMux) {
+	  adcSampleCh0 = result_values[0];
+  	  adcSampleCh0 = single_pole_iir_filter(&iirFilt, adcSampleCh0);
+  }
+
+  else {
+	  adcSampleCh1 = result_values[0];
+	  adcSampleCh1 = single_pole_iir_filter(&iirFilt2, adcSampleCh1);
+  }
+
+  /* Add for ARM errata 838869, affects Cortex-M4, Cortex-M4F
+     Store immediate overlapping exception return operation might vector to incorrect interrupt. */
+  #if defined __CORTEX_M && (__CORTEX_M == 4U)
+    __DSB();
+  #endif
+}
+
+/* PIT0_IRQn interrupt handler */
+void PIT_CHANNEL_0_IRQHANDLER(void) {
+  uint32_t intStatus;
+  /* Reading all interrupt flags of status register */
+  intStatus = PIT_GetStatusFlags(PIT_PERIPHERAL, PIT_CHANNEL_0);
+  PIT_ClearStatusFlags(PIT_PERIPHERAL, PIT_CHANNEL_0, intStatus);
+
+  /* Place your code here */
+  switch (configDelayParam) {
+  case kLockConfig:
+	  LED_RED_OFF();
+	  LED_GREEN_TOGGLE();
+	  break;
+  case kConfigDelayAmount:
+	  LED_GREEN_OFF();
+	  LED_RED_TOGGLE();
+	  break;
+  default:
+	  break;
+  }
+
+  /* Add for ARM errata 838869, affects Cortex-M4, Cortex-M4F
+     Store immediate overlapping exception return operation might vector to incorrect interrupt. */
+  #if defined __CORTEX_M && (__CORTEX_M == 4U)
+    __DSB();
+  #endif
+}
+
+/* PIT1_IRQn interrupt handler */
+void PIT_CHANNEL_1_IRQHANDLER(void) {
+  uint32_t intStatus;
+  static uint16_t counter = 0U;
+
+   /* Reading all interrupt flags of status register */
+  intStatus = PIT_GetStatusFlags(PIT_PERIPHERAL, PIT_CHANNEL_1);
+  PIT_ClearStatusFlags(PIT_PERIPHERAL, PIT_CHANNEL_1, intStatus);
+
+  /* Place your code here */
+  adcMux ^= 0b1;
+  ADC16_SetChannelConfig(ADC0_PERIPHERAL, ADC0_CH0_CONTROL_GROUP, &ADC0_channelsConfig[adcMux]);
+
+  if(configDelayParam == kConfigDelayFb) {
+	  uint16_t aux = (uint16_t) ((float32_t) adcSampleCh1/4095.0f * 20.0f);
+
+	  if(aux >= 10U) {
+		  if(counter < aux - 10U)
+			  LED_RED_ON();
+		  else
+			  LED_RED_OFF();
+	  }
+
+	  else {
+		  if(counter < aux)
+			  LED_RED_OFF();
+		  else
+			  LED_RED_ON();
+	  }
+  }
+
+  if(counter == 10U)
+	  counter = 0U;
+  else
+	  counter++;
+
+  /* Add for ARM errata 838869, affects Cortex-M4, Cortex-M4F
+     Store immediate overlapping exception return operation might vector to incorrect interrupt. */
+  #if defined __CORTEX_M && (__CORTEX_M == 4U)
+    __DSB();
+  #endif
+}
+
+/* PORTC_IRQn interrupt handler */
+void GPIOC_IRQHANDLER(void) {
+  /* Get pin flags */
+  uint32_t pin_flags = GPIO_PortGetInterruptFlags(GPIOC);
+
+  /* Place your interrupt code here */
+  if(configDelayParam == kConfigDelayFb)
+	  configDelayParam = kLockConfig;
+  else
+	  configDelayParam++;
+
+  /* Clear pin flags */
+  GPIO_PortClearInterruptFlags(GPIOC, pin_flags);
+
+  /* Add for ARM errata 838869, affects Cortex-M4, Cortex-M4F
+     Store immediate overlapping exception return operation might vector to incorrect interrupt. */
+  #if defined __CORTEX_M && (__CORTEX_M == 4U)
+    __DSB();
+  #endif
+}
+

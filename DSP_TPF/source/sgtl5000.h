@@ -80,5 +80,6 @@ void sgtl5000_dap_setup();
 void sgtl5000_i2s_setup();
 void sgtl5000_init_Line_in_HP_out_32K();
 void sgtl5000_init_Line_in_AVC_HP_out_32K();
+void sgtl5000_init_MIC_in_AVC_HP_out_32K();
 
 #endif /* SGTL5000_H_ */

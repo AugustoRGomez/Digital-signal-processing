@@ -25,6 +25,8 @@ source/DSP_TPF.o source/DSP_TPF.d: ../source/DSP_TPF.c \
  C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_sai.h \
  C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_clock.h \
  C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_uart.h \
+ C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_adc16.h \
+ C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_pit.h \
  C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\board/pin_mux.h \
  C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\board/clock_config.h \
  C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\device/MK64F12.h \
@@ -34,7 +36,7 @@ source/DSP_TPF.o source/DSP_TPF.d: ../source/DSP_TPF.c \
  C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\component\uart/fsl_adapter_uart.h \
  C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\CMSIS\DSP\Include/arm_math.h \
  C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\CMSIS/cmsis_compiler.h \
- ../source/testFilter.h ../source/LPFilter32K.h ../source/sgtl5000.h
+ ../source/sgtl5000.h
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\board/board.h:
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\board/clock_config.h:
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_common.h:
@@ -61,6 +63,8 @@ C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fs
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_sai.h:
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_clock.h:
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_uart.h:
+C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_adc16.h:
+C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\drivers/fsl_pit.h:
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\board/pin_mux.h:
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\board/clock_config.h:
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\device/MK64F12.h:
@@ -70,6 +74,4 @@ C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\component\
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\component\uart/fsl_adapter_uart.h:
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\CMSIS\DSP\Include/arm_math.h:
 C\:\Users\augus\Documents\MCUXpressoIDE_11.4.0_6224\workspace\DSP_TPF\CMSIS/cmsis_compiler.h:
-../source/testFilter.h:
-../source/LPFilter32K.h:
 ../source/sgtl5000.h:

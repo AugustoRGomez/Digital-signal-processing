@@ -535,3 +535,112 @@ void sgtl5000_init_Line_in_HP_out_32K() {
 	// Unmute ADC
 	sgtl5000_modify_register(SGTL5000_CHIP_ANA_CTRL, 0b0, 1U, 0U); // bit 0
 }
+
+void sgtl5000_init_MIC_in_AVC_HP_out_32K() {
+	/*--------------- Power Supply Configuration------------------------*/
+	// NOTE: This next 2 Write calls is needed ONLY if VDDD is
+	// internally driven by the chip
+	// Configure VDDD level to 1.2V (bits 3:0)
+	sgtl5000_write_register(0x0008, SGTL5000_CHIP_LINREG_CTRL);
+	// Power up internal linear regulator (Set bit 9)
+	sgtl5000_write_register(0x7260, SGTL5000_CHIP_ANA_POWER);
+	// NOTE: The next modify call is only needed if both VDDA and
+	// VDDIO are greater than 3.1V
+	// Configure the charge pump to use the VDDIO rail (set bit 5 and bit 6)
+	sgtl5000_modify_register(SGTL5000_CHIP_LINREG_CTRL, 0b11, 2U, 5U);
+
+	/*------ Reference Voltage and Bias Current Configuration-----------*/
+	// NOTE: The value written in the next 2 Write calls is dependent
+	// on the VDDA voltage value.
+	// Set ground, ADC, DAC reference voltage (bits 8:4). The value should
+	// be set to VDDA/2. This example assumes VDDA = 1.8V. VDDA/2 = 0.9V.
+	// The bias current should be set to 50% of the nominal value (bits 3:1)
+	sgtl5000_write_register(0x01E0, SGTL5000_CHIP_REF_CTRL);
+
+	/*----------------Other Analog Block Configurations-----------------*/
+	// Configure slow ramp up rate to minimize pop (bit 0)
+	sgtl5000_modify_register(SGTL5000_CHIP_REF_CTRL, 0b1, 1U, 0U);
+	// Enable short detect mode for headphone left/right
+	// and center channel and set short detect current trip level
+	// to 75mA
+	sgtl5000_write_register(0x1106, SGTL5000_CHIP_SHORT_CTRL);
+	// Enable Zero-cross detect if needed for HP_OUT (bit 5) and ADC (bit 1)
+	sgtl5000_write_register(0x0133, SGTL5000_CHIP_ANA_CTRL);
+
+	/*----------------Power up Inputs/Outputs/Digital Blocks------------*/
+	// Power up HP, ADC, DAC, CHARGEPUMP
+	sgtl5000_write_register(0x6AFB, SGTL5000_CHIP_ANA_POWER);
+	// Power up desired digital blocks
+	// DAC, ADC, I2S_IN, I2S_OUT, DAP
+	sgtl5000_write_register(0x0073, SGTL5000_CHIP_DIG_POWER);
+
+	/*-------------------------I/O routing------------------------------*/
+	// LINE_IN -> ADC -> I2S_OUT -> DAP -> I2S_IN -> DAC -> HP_OUT
+	// Set ADC input to MIC_IN
+	sgtl5000_modify_register(SGTL5000_CHIP_ANA_CTRL, 0b0, 1U, 2U); // bit 2
+	// Route ADC to I2S_OUT, I2S_IN to DAP, DAP to DAC
+	sgtl5000_write_register(0x0013, SGTL5000_CHIP_SSS_CTRL);
+	// Set DAC output to HP_OUT
+	sgtl5000_modify_register(SGTL5000_CHIP_ANA_CTRL, 0b0, 0U, 6U); // bit 6
+
+	/*-------------------------DAP setup--------------------------------*/
+	sgtl5000_write_register(0x0001, SGTL5000_CHIP_DAP_CTRL); //SGTL5000_DAP_CONTROL
+	sgtl5000_write_register(0x0003, SGTL5000_DAP_AUDIO_EQ); //SGTL5000_DAP_AUDIO_EQ
+	sgtl5000_write_register(0x0A40, SGTL5000_DAP_AVC_THRESHOLD); //SGTL5000_DAP_AVC_THRESHOLD
+	sgtl5000_write_register(0x0014, SGTL5000_DAP_AVC_ATTACK); //SGTL5000_DAP_AVC_ATTACK
+	sgtl5000_write_register(0x0028, SGTL5000_DAP_AVC_DECAY); //SGTL5000_DAP_AVC_DECAY
+	sgtl5000_write_register(0x0001, SGTL5000_CHIP_DAP_AVC_CTRL); //SGTL5000_DAP_AVC_CTRL
+
+	/*-------------------------CLK setup--------------------------------*/
+	/* MCLK & SampleCLK */
+	// 0x0008 Configure SYS_FS clock to 48 kHz, MCLK_FREQ to 256*Fs
+	// 0x0000 Configure SYS_FS clock to 32 kHz, MCLK_FREQ to 256*Fs
+	sgtl5000_write_register(0x0000, SGTL5000_CHIP_CLK_CTRL);
+
+	/*-------------------------I2S setup--------------------------------*/
+	/* Configure codec as Slave */
+	// 0x0000 32bits SCLK= 64*Fs (best perfomance)
+	// 0x0080 32bits SCLK= 64*Fs SCLK falling edge
+	// 0x0170 16bits SCLK= 32*Fs SCLK falling edge
+	sgtl5000_write_register(0x0000, SGTL5000_CHIP_I2S_CTRL);
+
+	/*---------------- Input Volume Control---------------------*/
+	// Configure ADC left and right analog volume to desired default.
+	// Example shows volume of 0dB
+	sgtl5000_write_register(0x0000, SGTL5000_CHIP_ANA_ADC_CTRL);
+
+	// Configure MIC gain if needed (D)
+	// Configure MIC bias voltage (C)
+	// Configure MIC bias resistor (B)
+	sgtl5000_write_register(0x3B2, SGTL5000_CHIP_MIC_CTRL);
+
+	/*---------------- Volume and Mute Control--------------------------*/
+	// Configure HP_OUT left and right volume to minimum, unmute
+	// HP_OUT and ramp the volume up to desired volume.
+	sgtl5000_write_register(0x7F7F, SGTL5000_CHIP_ANA_HP_CTRL);
+	sgtl5000_modify_register(SGTL5000_CHIP_ANA_CTRL, 0b0, 1U, 4U); // bit 4
+
+	// Code assumes that left and right volumes are set to same value
+	// So it only uses the left volume for the calculations
+	uint8_t currentVol = 0x7F;
+	uint8_t finalVol = 0x10;
+	uint8_t numSteps = abs(currentVol - finalVol);
+	uint16_t currentVolLR;
+
+	// Ramp up
+	if (numSteps > 0U) {
+		for(uint16_t i = 0U; i < numSteps; i++) {
+			--currentVol;
+			currentVolLR = (currentVol << 8) | (currentVol);
+			sgtl5000_write_register(currentVolLR, SGTL5000_CHIP_ANA_HP_CTRL);
+		}
+	}
+
+	// Configure DAC left and right digital volume. Example shows
+	// volume of 0dB
+	sgtl5000_write_register(0x3C3C, SGTL5000_CHIP_DAC_VOL);
+	sgtl5000_write_register(0x0200, SGTL5000_CHIP_ADCDAC_CTRL);
+
+	// Unmute ADC
+	sgtl5000_modify_register(SGTL5000_CHIP_ANA_CTRL, 0b0, 1U, 0U); // bit 0
+}
