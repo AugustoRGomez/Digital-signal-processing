@@ -1085,6 +1085,16 @@
                         <data type="Version">2.1.0</data>
                      </feature>
                   </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.port" description="The fsl_port driver is missing in the project (required for the GPIO driver)." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="enabled" evaluation="equal">
+                        <data type="Boolean">true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.port" description="The compatible version of the fsl_port driver is not available in the project (required for the GPIO driver)." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="version" evaluation="compatible">
+                        <data type="Version">2.1.0</data>
+                     </feature>
+                  </dependency>
                </dependencies>
                <instances>
                   <instance name="NVIC" uuid="b467c13e-1051-4f8e-b536-0a31b834ce21" type="nvic" type_id="nvic_57b5eef3774cc60acaede6f5b8bddc67" mode="general" peripheral="NVIC" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
@@ -1094,6 +1104,7 @@
                            <struct name="1"/>
                            <struct name="2"/>
                            <struct name="3"/>
+                           <struct name="4"/>
                         </array>
                         <array name="interrupts"/>
                      </config_set>
@@ -1210,7 +1221,7 @@
                               <struct name="edma_group">
                                  <setting name="enable_edma_channel" value="true"/>
                                  <struct name="edma_channel">
-                                    <setting name="uid" value="1651179028756"/>
+                                    <setting name="uid" value="1651244492718"/>
                                     <setting name="eDMAn" value="1"/>
                                     <setting name="eDMA_source" value="kDmaRequestMux0I2S0Tx"/>
                                     <setting name="enableTriggerPIT" value="false"/>
@@ -1302,7 +1313,7 @@
                               <struct name="edma_group">
                                  <setting name="enable_edma_channel" value="true"/>
                                  <struct name="edma_channel">
-                                    <setting name="uid" value="1651179028757"/>
+                                    <setting name="uid" value="1651244492720"/>
                                     <setting name="eDMAn" value="0"/>
                                     <setting name="eDMA_source" value="kDmaRequestMux0I2S0Rx"/>
                                     <setting name="enableTriggerPIT" value="false"/>
@@ -1384,8 +1395,7 @@
                         <struct name="adc16_hardware_compare_config">
                            <setting name="hardwareCompareModeEnable" value="false"/>
                         </struct>
-                        <setting name="doAutoCalibration" value="false"/>
-                        <setting name="offset" value="0"/>
+                        <setting name="doAutoCalibration" value="true"/>
                         <setting name="trigger" value="false"/>
                         <setting name="enable_dma" value="false"/>
                         <setting name="enable_irq" value="true"/>
@@ -1443,7 +1453,7 @@
                               <setting name="channel_id" value="CHANNEL_1"/>
                               <setting name="channelNumber" value="1"/>
                               <setting name="enableChain" value="false"/>
-                              <setting name="timerPeriod" value="1KHz"/>
+                              <setting name="timerPeriod" value="4KHz"/>
                               <setting name="startTimer" value="true"/>
                               <setting name="enableInterrupt" value="true"/>
                               <struct name="interrupt">
@@ -1462,6 +1472,18 @@
                         <setting name="enable_irq" value="true"/>
                         <struct name="port_interrupt">
                            <setting name="IRQn" value="PORTC_IRQn"/>
+                           <setting name="enable_interrrupt" value="enabled"/>
+                           <setting name="enable_priority" value="false"/>
+                           <setting name="priority" value="0"/>
+                           <setting name="enable_custom_name" value="false"/>
+                        </struct>
+                     </config_set>
+                  </instance>
+                  <instance name="GPIOA" uuid="91a8839e-9df8-49f2-b080-60b9aab1584a" type="gpio" type_id="gpio_5920c5e026e8e974e6dc54fbd5e22ad7" mode="GPIO" peripheral="GPIOA" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
+                     <config_set name="fsl_gpio">
+                        <setting name="enable_irq" value="true"/>
+                        <struct name="port_interrupt">
+                           <setting name="IRQn" value="PORTA_IRQn"/>
                            <setting name="enable_interrrupt" value="enabled"/>
                            <setting name="enable_priority" value="false"/>
                            <setting name="priority" value="0"/>

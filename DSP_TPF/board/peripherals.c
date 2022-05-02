@@ -110,6 +110,7 @@ instance:
       - 1: []
       - 2: []
       - 3: []
+      - 4: []
     - interrupts: []
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 /* clang-format on */
@@ -251,7 +252,7 @@ instance:
         - edma_group:
           - enable_edma_channel: 'true'
           - edma_channel:
-            - uid: '1651179028756'
+            - uid: '1651244492718'
             - eDMAn: '1'
             - eDMA_source: 'kDmaRequestMux0I2S0Tx'
             - enableTriggerPIT: 'false'
@@ -326,7 +327,7 @@ instance:
         - edma_group:
           - enable_edma_channel: 'true'
           - edma_channel:
-            - uid: '1651179028757'
+            - uid: '1651244492720'
             - eDMAn: '0'
             - eDMA_source: 'kDmaRequestMux0I2S0Rx'
             - enableTriggerPIT: 'false'
@@ -521,8 +522,7 @@ instance:
     - adc16_channel_mux_mode: 'kADC16_ChannelMuxA'
     - adc16_hardware_compare_config:
       - hardwareCompareModeEnable: 'false'
-    - doAutoCalibration: 'false'
-    - offset: '0'
+    - doAutoCalibration: 'true'
     - trigger: 'false'
     - enable_dma: 'false'
     - enable_irq: 'true'
@@ -582,6 +582,8 @@ static void ADC0_init(void) {
   ADC16_EnableHardwareTrigger(ADC0_PERIPHERAL, false);
   /* Configure channel multiplexing mode */
   ADC16_SetChannelMuxMode(ADC0_PERIPHERAL, ADC0_muxMode);
+  /* Perform auto calibration */
+  ADC16_DoAutoCalibration(ADC0_PERIPHERAL);
   /* Initialize channel */
   ADC16_SetChannelConfig(ADC0_PERIPHERAL, ADC0_CH0_CONTROL_GROUP, &ADC0_channelsConfig[0]);
   /* Enable interrupt ADC0_IRQn request in the NVIC. */
@@ -625,7 +627,7 @@ instance:
         - channel_id: 'CHANNEL_1'
         - channelNumber: '1'
         - enableChain: 'false'
-        - timerPeriod: '1KHz'
+        - timerPeriod: '4KHz'
         - startTimer: 'true'
         - enableInterrupt: 'true'
         - interrupt:
@@ -691,6 +693,37 @@ static void GPIOC_init(void) {
 }
 
 /***********************************************************************************************************************
+ * GPIOA initialization code
+ **********************************************************************************************************************/
+/* clang-format off */
+/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+instance:
+- name: 'GPIOA'
+- type: 'gpio'
+- mode: 'GPIO'
+- custom_name_enabled: 'false'
+- type_id: 'gpio_5920c5e026e8e974e6dc54fbd5e22ad7'
+- functional_group: 'BOARD_InitPeripherals'
+- peripheral: 'GPIOA'
+- config_sets:
+  - fsl_gpio:
+    - enable_irq: 'true'
+    - port_interrupt:
+      - IRQn: 'PORTA_IRQn'
+      - enable_interrrupt: 'enabled'
+      - enable_priority: 'false'
+      - priority: '0'
+      - enable_custom_name: 'false'
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
+/* clang-format on */
+
+static void GPIOA_init(void) {
+  /* Make sure, the clock gate for port A is enabled (e. g. in pin_mux.c) */
+  /* Enable interrupt PORTA_IRQn request in the NVIC. */
+  EnableIRQ(GPIOA_IRQN);
+}
+
+/***********************************************************************************************************************
  * Initialization functions
  **********************************************************************************************************************/
 void BOARD_InitPeripherals(void)
@@ -706,6 +739,7 @@ void BOARD_InitPeripherals(void)
   ADC0_init();
   PIT_init();
   GPIOC_init();
+  GPIOA_init();
 }
 
 /***********************************************************************************************************************

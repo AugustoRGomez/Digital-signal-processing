@@ -60,10 +60,9 @@
 #define MIN_DELAY 10U // [ms]
 #define SAMPLE_RATE 32000.0f
 
-#define IIR_FILTER_ALPHA 0.9f // 0 <= alpha <= 1
+#define IIR_FILTER_ALPHA 0.99f // 0 <= alpha <= 1
 
-#define MIN_VALUE_FB (q31_t) 0x88008000
-#define MAX_VALUE_FB (q31_t) 0x7b200000
+#define MIN_DELAY_FB (q31_t) 0x88508501
 
 /*-------------------ENUM & STRUCT----------------*/
 typedef enum {
@@ -75,10 +74,16 @@ typedef enum {
 	kLockConfig,
 	kConfigDelayAmount,
 	kConfigDelayFb,
-} delay_config;
+} delay_config_param;
+
+typedef enum {
+	kHomogeneousMix,
+	kOnlySignal,
+	kOnlyDelay,
+} delay_mix;
 
 typedef struct {
-	float32_t alpha;
+	float32_t  ;
 	uint32_t out;
 } iir_filter_struct;
 
@@ -102,8 +107,6 @@ q31_t delayFeedBack = FLOAT_TO_Q31(0.0f);
 uint32_t delayInMs = MIN_DELAY;
 uint32_t delayInSamples = (uint32_t) ((float32_t) MIN_DELAY * SAMPLE_RATE / 1000.0f);
 q31_t delayFifo[DELAY_DEPTH];
-q31_t delayWetLvl = MAX_RANGE_Q31; //1.0
-q31_t delayDryLvl = MAX_RANGE_Q31;
 
 buff_to_process rx_proc_buffer, tx_proc_buffer;
 
@@ -114,11 +117,11 @@ sai_transfer_t rxFer, txFer;
 
 uint8_t syncFlag = 1;
 uint8_t adcMux = 0;
-delay_config configDelayParam = 0;
+delay_config_param configDelayParam = 0;
+delay_mix configMix = 0;
 
 uint16_t readValue;
-uint32_t adcSampleCh0;
-uint32_t adcSampleCh1;
+uint32_t adcSampleCh0, adcSampleCh1;
 
 iir_filter_struct iirFilt;
 iir_filter_struct iirFilt2;
@@ -151,7 +154,6 @@ int main(void) {
     txFer.data = (uint8_t *) pingOut;
 
     /* DELAY Setup */
-//    delayDryLvl = MAX_RANGE_Q31 - delayWetLvl; // dry = 1 - wet
     readIndex = writeIndex - delayInSamples;
     if(readIndex < 0)
     	readIndex += DELAY_DEPTH;
@@ -164,8 +166,9 @@ int main(void) {
     iirFilt2.out = 0U;
 
     /* SGTL5000 codec init */
-    //sgtl5000_init_Line_in_AVC_HP_out_32K();
-    sgtl5000_init_MIC_in_AVC_HP_out_32K();
+//    sgtl5000_init_Line_in_AVC_HP_out_32K();
+//    sgtl5000_init_MIC_in_AVC_HP_out_32K();
+    sgtl5000_init_Line_in_AVC_Line_out_32K();
 
     SAI_TransferReceiveEDMA(I2S0_PERIPHERAL, &I2S0_SAI_Rx_eDMA_Handle, &rxFer);
 
@@ -192,25 +195,26 @@ uint32_t single_pole_iir_filter(iir_filter_struct *filter, uint32_t in) {
 }
 
 void cook_variables() {
-	if(configDelayParam == kConfigDelayAmount) {
+	switch (configDelayParam) {
+	case kConfigDelayAmount:
 		delayInMs = (uint32_t) ((float32_t) adcSampleCh0 * MAX_DELAY/4095.0f);
 		if(delayInMs < MIN_DELAY)
 			delayInMs = MIN_DELAY;
 
 		delayInSamples = (uint32_t) ((float32_t) delayInMs * SAMPLE_RATE/1000.0f);
 
-	    readIndex = writeIndex - delayInSamples;
-	    if(readIndex < 0)
-	    	readIndex += DELAY_DEPTH;
-	}
-
-	else if(configDelayParam == kConfigDelayFb) {
-		delayFeedBack = (q31_t) ((adcSampleCh1 * 1048832) ^ 0x80000000);
-
-		if(delayFeedBack > MAX_VALUE_FB)
-			delayFeedBack = MAX_VALUE_FB;
-		else if(delayFeedBack < MIN_VALUE_FB)
-			delayFeedBack = MIN_VALUE_FB;
+		readIndex = writeIndex - delayInSamples;
+		if(readIndex < 0)
+			readIndex += DELAY_DEPTH;
+		break;
+	case kConfigDelayFb:
+		delayFeedBack =  (q31_t) (adcSampleCh1 * 1048832) - (q31_t) HALF_RANGE_Q31;
+		if(delayFeedBack < MIN_DELAY_FB)
+			delayFeedBack = MIN_DELAY_FB;
+		break;
+	case kLockConfig:
+	default:
+		break;
 	}
 }
 
@@ -243,21 +247,32 @@ void process_block() {
 	cook_variables();
 
 	/* Scale down input samples */
-	arm_scale_q31(LInBuff, FLOAT_TO_Q31(0.5f), 0U, LInBuffScaledD, BLOCKSIZE); // scale = scaleFract * 2^shift
+	arm_scale_q31(LInBuff, MAX_RANGE_Q31, -1, LInBuffScaledD, BLOCKSIZE); // scale = scaleFract * 2^shift
 
 	for(uint16_t i = 0U; i < BLOCKSIZE; i++) {
 		/* Read the output of the delay at readIndex */
 		q31_t y = delayFifo[readIndex];
-		q31_t aux, aux2, aux3;
+		q31_t aux;
 
 		/* Write the input to the delay */
 		arm_mult_q31(&delayFeedBack, &y, &aux, 1U);
 		arm_add_q31(&aux, &LInBuffScaledD[i], &delayFifo[writeIndex], 1U); // x + delayFeedBack*y;
 
-		/* Create the wet/dry mix and write to the output buffer, dry = 1 - wet */
-		arm_mult_q31(&delayWetLvl, &y, &aux2, 1U);
-		arm_mult_q31(&delayDryLvl, &LInBuffScaledD[i], &aux3, 1U);
-		arm_add_q31(&aux2, &aux3, pTx, 1U); // delayWetLvl*y + (1.0 - delayWetLvl)*x;
+		/* Create the wet/dry mix and write to the output buffer */
+		switch (configMix) {
+		case kHomogeneousMix:
+			arm_add_q31(&y, &LInBuffScaledD[i], pTx, 1U);
+			break;
+		case kOnlySignal:
+			arm_scale_q31(&LInBuffScaledD[i], FLOAT_TO_Q31(0.9f), 1U, pTx, 1U);
+			break;
+		case kOnlyDelay:
+			arm_scale_q31(&y, FLOAT_TO_Q31(0.9f), 1U, pTx, 1U);
+			break;
+		default:
+			arm_add_q31(&y, &LInBuffScaledD[i], pTx, 1U);
+			break;
+		}
 
 		/* Copy L samples in R channel */
 		arm_copy_q31(pTx, (pTx + 1), 1U);
@@ -464,6 +479,27 @@ void GPIOC_IRQHANDLER(void) {
 
   /* Clear pin flags */
   GPIO_PortClearInterruptFlags(GPIOC, pin_flags);
+
+  /* Add for ARM errata 838869, affects Cortex-M4, Cortex-M4F
+     Store immediate overlapping exception return operation might vector to incorrect interrupt. */
+  #if defined __CORTEX_M && (__CORTEX_M == 4U)
+    __DSB();
+  #endif
+}
+
+/* PORTA_IRQn interrupt handler */
+void GPIOA_IRQHANDLER(void) {
+  /* Get pin flags */
+  uint32_t pin_flags = GPIO_PortGetInterruptFlags(GPIOA);
+
+  /* Place your interrupt code here */
+  if(configMix == kOnlyDelay)
+	  configMix = kHomogeneousMix;
+  else
+	  configMix++;
+
+  /* Clear pin flags */
+  GPIO_PortClearInterruptFlags(GPIOA, pin_flags);
 
   /* Add for ARM errata 838869, affects Cortex-M4, Cortex-M4F
      Store immediate overlapping exception return operation might vector to incorrect interrupt. */

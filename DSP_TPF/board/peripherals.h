@@ -103,7 +103,7 @@ extern "C" {
 /* Definition of ticks count for channel 0 - deprecated. */
 #define PIT_0_TICKS USEC_TO_COUNT(5000U, PIT_CLK_FREQ) - 1U
 /* Definition of ticks count for channel 1 - deprecated. */
-#define PIT_1_TICKS USEC_TO_COUNT(1000U, PIT_CLK_FREQ) - 1U
+#define PIT_1_TICKS USEC_TO_COUNT(250U, PIT_CLK_FREQ) - 1U
 /* PIT interrupt vector ID (number) - deprecated. */
 #define PIT_0_IRQN PIT0_IRQn
 /* PIT interrupt handler identifier - deprecated. */
@@ -119,7 +119,7 @@ extern "C" {
 /* Definition of ticks count for channel 0. */
 #define PIT_CHANNEL_0_TICKS USEC_TO_COUNT(5000U, PIT_CLK_FREQ) - 1U
 /* Definition of ticks count for channel 1. */
-#define PIT_CHANNEL_1_TICKS USEC_TO_COUNT(1000U, PIT_CLK_FREQ) - 1U
+#define PIT_CHANNEL_1_TICKS USEC_TO_COUNT(250U, PIT_CLK_FREQ) - 1U
 /* PIT interrupt vector ID (number). */
 #define PIT_CHANNEL_0_IRQN PIT0_IRQn
 /* PIT interrupt handler identifier. */
@@ -136,6 +136,14 @@ extern "C" {
 #define GPIOC_IRQN PORTC_IRQn
 /* GPIOC interrupt handler identifier. */
 #define GPIOC_IRQHANDLER PORTC_IRQHandler
+/* Alias for GPIOA peripheral */
+#define GPIOA_GPIO GPIOA
+/* Alias for PORTA */
+#define GPIOA_PORT PORTA
+/* GPIOA interrupt vector ID (number). */
+#define GPIOA_IRQN PORTA_IRQn
+/* GPIOA interrupt handler identifier. */
+#define GPIOA_IRQHANDLER PORTA_IRQHandler
 
 /***********************************************************************************************************************
  * Global variables
