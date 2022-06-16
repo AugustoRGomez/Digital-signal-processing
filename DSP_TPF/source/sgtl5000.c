@@ -12,7 +12,8 @@
  *  -sgtl5000_i2s_setup();
  *  -sgtl5000_volume_setup();
  *
- *  Although, you can just execute sgtl5000_init_LIN_HP_32K for a quick init configuration.
+ *  You can modify each function as wish.
+ *  Also, you can just execute sgtl5000_init_xx_32K() init functions for a quick configuration.
  */
 #include "sgtl5000.h"
 
@@ -536,7 +537,7 @@ void sgtl5000_init_Line_in_HP_out_32K() {
 	sgtl5000_modify_register(SGTL5000_CHIP_ANA_CTRL, 0b0, 1U, 0U); // bit 0
 }
 
-void sgtl5000_init_MIC_in_AVC_HP_out_32K() {
+void sgtl5000_init_MIC_in_AVC_HP_Line_out_32K() {
 	/*--------------- Power Supply Configuration------------------------*/
 	// NOTE: This next 2 Write calls is needed ONLY if VDDD is
 	// internally driven by the chip
@@ -557,6 +558,10 @@ void sgtl5000_init_MIC_in_AVC_HP_out_32K() {
 	// The bias current should be set to 50% of the nominal value (bits 3:1)
 	sgtl5000_write_register(0x01E0, SGTL5000_CHIP_REF_CTRL);
 
+	// Set LINEOUT reference voltage to VDDIO/2 (1.65V) (bits 5:0) and bias current (bits 11:8) to
+	// the recommended value of 0.36mA for 10kOhm load with 1nF capacitance
+	sgtl5000_write_register(0x0322, SGTL5000_CHIP_LINE_OUT_CTRL);
+
 	/*----------------Other Analog Block Configurations-----------------*/
 	// Configure slow ramp up rate to minimize pop (bit 0)
 	sgtl5000_modify_register(SGTL5000_CHIP_REF_CTRL, 0b1, 1U, 0U);
@@ -570,15 +575,26 @@ void sgtl5000_init_MIC_in_AVC_HP_out_32K() {
 	/*----------------Power up Inputs/Outputs/Digital Blocks------------*/
 	// Power up HP, ADC, DAC, CHARGEPUMP
 	sgtl5000_write_register(0x6AFB, SGTL5000_CHIP_ANA_POWER);
+	// Power up LINE_out
+	sgtl5000_modify_register(SGTL5000_CHIP_ANA_POWER, 0b1, 1U, 0U);
 	// Power up desired digital blocks
 	// DAC, ADC, I2S_IN, I2S_OUT, DAP
 	sgtl5000_write_register(0x0073, SGTL5000_CHIP_DIG_POWER);
 
+	/*--------------------Set LINEOUT Volume Level-----------------------*/
+	// Set the LINEOUT volume level based on voltage reference (VAG)
+	// values using this formula
+	// Value = (int)(40*log(VAG_VAL/LO_VAGCNTRL) + 15)
+	// Assuming VAG_VAL and LO_VAGCNTRL is set to 0.9V and 1.65V respectively, the
+	// left LO volume (bits 12:8) and right LO volume (bits 4:0) value should be set
+	// to 5
+	sgtl5000_write_register(0x0505, SGTL5000_CHIP_LINE_OUT_VOL);
+
 	/*-------------------------I/O routing------------------------------*/
-	// LINE_IN -> ADC -> I2S_OUT -> DAP -> I2S_IN -> DAC -> HP_OUT
+	// LINE_IN -> ADC -> DAP -> I2S_OUT -> I2S_IN -> DAC -> HP_OUT & LINE_OUT
 	// Set ADC input to MIC_IN
 	sgtl5000_modify_register(SGTL5000_CHIP_ANA_CTRL, 0b0, 1U, 2U); // bit 2
-	// Route ADC to I2S_OUT, I2S_IN to DAP, DAP to DAC
+	// Route ADC to DAP, DAP to I2S_OUT, I2S_IN to DAC
 	sgtl5000_write_register(0x0013, SGTL5000_CHIP_SSS_CTRL);
 	// Set DAC output to HP_OUT
 	sgtl5000_modify_register(SGTL5000_CHIP_ANA_CTRL, 0b0, 0U, 6U); // bit 6
@@ -640,6 +656,9 @@ void sgtl5000_init_MIC_in_AVC_HP_out_32K() {
 	// volume of 0dB
 	sgtl5000_write_register(0x3C3C, SGTL5000_CHIP_DAC_VOL);
 	sgtl5000_write_register(0x0200, SGTL5000_CHIP_ADCDAC_CTRL);
+
+	// LINEOUT and DAC volume control
+	sgtl5000_modify_register(SGTL5000_CHIP_ANA_CTRL, 0b0, 1U, 8U);
 
 	// Unmute ADC
 	sgtl5000_modify_register(SGTL5000_CHIP_ANA_CTRL, 0b0, 1U, 0U); // bit 0

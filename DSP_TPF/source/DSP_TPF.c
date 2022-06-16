@@ -16,6 +16,9 @@
  * 	  -RX_D : J1[15]
  * 	  -RX_FS : J1[13]
  *
+ * 	  GPIO:
+ *
+ *
  * 	TWR-ELEV:
  * 	 I2C:
  * 	  -SDA : J8[8]
@@ -25,7 +28,6 @@
  * 	  -BLCK: J8[22]
  * 	  -RX_D: J8[24]
  *	  -FS:   J8[23]
- *
  */
 
 #ifndef MAIN_INCLUDE
@@ -46,14 +48,13 @@
 #include "sgtl5000.h"
 
 /*-------------------DEFINES----------------------*/
-#define BUFF_LEN 512U
+#define BUFF_LEN 64U
 #define BLOCKSIZE BUFF_LEN/4
 #define NUMTAPS 12U
 
 #define HALF_RANGE_Q31 2147483647.0f
 #define FLOAT_TO_Q31(arg) (q31_t) (HALF_RANGE_Q31 * arg)
 #define MAX_RANGE_Q31 (q31_t) 0x7FFFFFFF
-#define MAX_RANGE_UINT32 0xFFFFFFFF
 
 #define DELAY_DEPTH 32000U
 #define MAX_DELAY 1000.0f // [ms]
@@ -83,7 +84,7 @@ typedef enum {
 } delay_mix;
 
 typedef struct {
-	float32_t  ;
+	float32_t  alpha;
 	uint32_t out;
 } iir_filter_struct;
 
@@ -167,8 +168,8 @@ int main(void) {
 
     /* SGTL5000 codec init */
 //    sgtl5000_init_Line_in_AVC_HP_out_32K();
-//    sgtl5000_init_MIC_in_AVC_HP_out_32K();
-    sgtl5000_init_Line_in_AVC_Line_out_32K();
+    sgtl5000_init_MIC_in_AVC_HP_Line_out_32K();
+//    sgtl5000_init_Line_in_AVC_Line_out_32K();
 
     SAI_TransferReceiveEDMA(I2S0_PERIPHERAL, &I2S0_SAI_Rx_eDMA_Handle, &rxFer);
 
@@ -246,9 +247,9 @@ void process_block() {
 
 	cook_variables();
 
-	/* Scale down input samples */
-	arm_scale_q31(LInBuff, MAX_RANGE_Q31, -1, LInBuffScaledD, BLOCKSIZE); // scale = scaleFract * 2^shift
-
+	/* Scale down input samples to avoid possible overflow later */
+//	arm_scale_q31(LInBuff, MAX_RANGE_Q31, -1, LInBuffScaledD, BLOCKSIZE); // scale = scaleFract * 2^shift
+arm_copy_q31(LInBuff, LInBuffScaledD, BLOCKSIZE);
 	for(uint16_t i = 0U; i < BLOCKSIZE; i++) {
 		/* Read the output of the delay at readIndex */
 		q31_t y = delayFifo[readIndex];
@@ -292,6 +293,7 @@ void process_block() {
 }
 
 void I2S_RX_eDMA_callback(I2S_Type *base, sai_edma_handle_t *handle, status_t status, void *userData) {
+	/* Decide which half to process while filling up the other half */
 	if(rxFer.data == (uint8_t *) pingIn) {
 		rxFer.data = (uint8_t *) pongIn;
 		rx_proc_buffer = kPING;
@@ -314,6 +316,7 @@ void I2S_RX_eDMA_callback(I2S_Type *base, sai_edma_handle_t *handle, status_t st
 }
 
 void I2S_TX_eDMA_callback(I2S_Type *base, sai_edma_handle_t *handle, status_t status, void *userData) {
+	/* Decide which half to send while waiting for the other half to be processed */
 	if(txFer.data == (uint8_t *) pingOut) {
 		txFer.data = (uint8_t *) pongOut;
 		tx_proc_buffer = kPING;
@@ -404,6 +407,10 @@ void PIT_CHANNEL_0_IRQHANDLER(void) {
 
   /* Place your code here */
   switch (configDelayParam) {
+  /*
+   * Green LED will toggle if device is in LockMode, if it's in
+   * DelayAmount config mode, Red LED will toggle instead
+   */
   case kLockConfig:
 	  LED_RED_OFF();
 	  LED_GREEN_TOGGLE();
@@ -433,9 +440,16 @@ void PIT_CHANNEL_1_IRQHANDLER(void) {
   PIT_ClearStatusFlags(PIT_PERIPHERAL, PIT_CHANNEL_1, intStatus);
 
   /* Place your code here */
+  /* Two ADC channels are sampled doing software multiplexing */
   adcMux ^= 0b1;
   ADC16_SetChannelConfig(ADC0_PERIPHERAL, ADC0_CH0_CONTROL_GROUP, &ADC0_channelsConfig[adcMux]);
 
+  /*
+   * If device is on delayFeedback config mode, Red LED will
+   * bright up o down according to feedBack Potenciometer value
+   * (feedback can
+   * vary from -1 to +1 approximately)
+   */
   if(configDelayParam == kConfigDelayFb) {
 	  uint16_t aux = (uint16_t) ((float32_t) adcSampleCh1/4095.0f * 20.0f);
 
