@@ -139,7 +139,7 @@ iir_filter_struct iirFilt;
 iir_filter_struct iirFilt2;
 
 //lms instance
-arm_lms_instance_q15 lms_instance;
+arm_lms_instance_q31 lms_instance;
 
 /*---------------FUNCTION PROTOTYPES--------------*/
 void debug_printf_registers();
@@ -193,7 +193,7 @@ int main(void) {
     PIT_StartTimer(PIT_PERIPHERAL, kPIT_Chnl_0);
 
     //init lms for echo suppression.
-    arm_lms_init_q15(&lms_instance, NUMTAPSLMS, lmsCoeff, lmsState, MU, BLOCKSIZE, 0U);
+    arm_lms_init_q31(&lms_instance, NUMTAPSLMS, lmsCoeff, lmsState, MU, BLOCKSIZE, 0U);
 
     while(1) {
     	while (!(rx_buffer_full && tx_buffer_empty)) {}
@@ -280,17 +280,14 @@ void process_block() {
 //	arm_scale_q31(LInBuff, MAX_RANGE_Q31, -1, LInBuffScaledD, BLOCKSIZE); // scale = scaleFract * 2^shift
 	arm_copy_q31(LInBuff, LInBuffScaledD, BLOCKSIZE);
 
-	//echo suppressor
-	q15_t signalNoise;
-
-	//todo len(PING-PONG) IN 2*len(LINBUFF) ///////////////////////////////////////////////////////////////////////////
 	/**
 	 * lmsSrc -> LOutBuff
 	 * lmsOut -> No se usa
 	 * lmsRef -> LInBuffScaledD
 	 * lmsErr -> A procesar 
 	 */
-	arm_lms_q15(&lms_instance, &LOutBuff, &LInBuffScaledD, &lmsOutBuff, &lmsErrBuff, BLOCKSIZE);
+	 //todo len(PING-PONG) IN 2*len(LINBUFF) ///////////////////////////////////////////////////////////////////////////
+	arm_lms_q31(&lms_instance, &LOutBuff, &LInBuffScaledD, &lmsOutBuff, &lmsErrBuff, BLOCKSIZE);
 
 	for(uint16_t i = 0U; i < BLOCKSIZE; i++) {
 		/* Read the output of the delay at readIndex */
