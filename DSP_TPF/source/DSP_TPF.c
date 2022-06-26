@@ -16,9 +16,6 @@
  * 	  -RX_D : J1[15]
  * 	  -RX_FS : J1[13]
  *
- * 	  GPIO:
- *
- *
  * 	TWR-ELEV:
  * 	 I2C:
  * 	  -SDA : J8[8]
@@ -64,11 +61,6 @@
 #define IIR_FILTER_ALPHA 0.99f // 0 <= alpha <= 1
 
 #define MIN_DELAY_FB (q31_t) 0x88508501
-
-//lms defines
-#define NUMTAPSLMS 30U
-#define BLOCKSIZELMS BUFF_LEN/4
-#define MU 0x0147
 
 /*-------------------ENUM & STRUCT----------------*/
 typedef enum {
@@ -129,17 +121,8 @@ delay_mix configMix = 0;
 uint16_t readValue;
 uint32_t adcSampleCh0, adcSampleCh1;
 
-//lms input, output, coeficients and state
-q15_t lmsCoeff[NUMTAPSLMS];
-q15_t lmsState[NUMTAPSLMS + BLOCKSIZE];
-q15_t lmsOutBuff[BLOCKSIZE];
-q15_t lmsErrBuff[BLOCKSIZE];
-
 iir_filter_struct iirFilt;
 iir_filter_struct iirFilt2;
-
-//lms instance
-arm_lms_instance_q31 lms_instance;
 
 /*---------------FUNCTION PROTOTYPES--------------*/
 void debug_printf_registers();
@@ -148,9 +131,6 @@ void cook_variables();
 uint32_t single_pole_iir_filter();
 
 /*---------------------TODO:MAIN------------------*/
-/**
- * Init, config and process samples when input samples ready and output samples transmitted.
- */
 int main(void) {
     /* Init board hardware. */
  	BOARD_InitBootPins();
@@ -192,9 +172,6 @@ int main(void) {
 
     PIT_StartTimer(PIT_PERIPHERAL, kPIT_Chnl_0);
 
-    //init lms for echo suppression.
-    arm_lms_init_q31(&lms_instance, NUMTAPSLMS, lmsCoeff, lmsState, MU, BLOCKSIZE, 0U);
-
     while(1) {
     	while (!(rx_buffer_full && tx_buffer_empty)) {}
 
@@ -209,18 +186,12 @@ int main(void) {
     return 0;
 }
 
-/**
- * Single pole irr-filter noise suppressor, for delay and feedback potentiometers. 
- */
 uint32_t single_pole_iir_filter(iir_filter_struct *filter, uint32_t in) {
 	filter->out = (uint32_t) ((1.0f - filter->alpha) * (float32_t) in + (filter->alpha) * (float32_t) filter->out);
 
 	return filter->out;
 }
 
-/**
- * Delay an feedback parameters config. 
- */
 void cook_variables() {
 	switch (configDelayParam) {
 	case kConfigDelayAmount:
@@ -245,13 +216,9 @@ void cook_variables() {
 	}
 }
 
-/**
- * Audio process.
- */
 void process_block() {
 	q31_t *pRx, *pTx;
 
-	//switch between ping and pong
 	if(rx_proc_buffer == kPING)
 		pRx = pingIn;
 	else
@@ -272,7 +239,6 @@ void process_block() {
 	 * Apply Digital Effect
 	 * TODO:
 	 * Por ahora solo L channel
-	 * WET/DRY 50/50 unicamente
 	 */
 	cook_variables();
 
@@ -280,55 +246,34 @@ void process_block() {
 //	arm_scale_q31(LInBuff, MAX_RANGE_Q31, -1, LInBuffScaledD, BLOCKSIZE); // scale = scaleFract * 2^shift
 	arm_copy_q31(LInBuff, LInBuffScaledD, BLOCKSIZE);
 
-	/**
-	 * lmsSrc -> LOutBuff
-	 * lmsOut -> No se usa
-	 * lmsRef -> LInBuffScaledD
-	 * lmsErr -> A procesar 
-	 */
-	 //todo len(PING-PONG) IN 2*len(LINBUFF) ///////////////////////////////////////////////////////////////////////////
-	arm_lms_q31(&lms_instance, &LOutBuff, &LInBuffScaledD, &lmsOutBuff, &lmsErrBuff, BLOCKSIZE);
-
 	for(uint16_t i = 0U; i < BLOCKSIZE; i++) {
-		/* Read the output of the delay at readIndex */
+		/* Read the output from fifo at readIndex */
 		q31_t y = delayFifo[readIndex];
 		q31_t aux;
 
-		/* Write the input to the delay */
+		/* Write into delay fifo at writeIndex */
 		arm_mult_q31(&delayFeedBack, &y, &aux, 1U);
-		arm_add_q31(&aux, &lmsErrBuff[i], &delayFifo[writeIndex], 1U); // x + delayFeedBack*y;
+		arm_add_q31(&aux, &LInBuffScaledD[i], &delayFifo[writeIndex], 1U); // x + delayFeedBack*y;
 
-		/* Create the wet/dry mix and write to the output buffer */
+		/* Create the wet/dry mix and write into output buffer */
 		switch (configMix) {
-			case kHomogeneousMix:
-				// arm_add_q31(&y, &LInBuffScaledD[i], pTx, 1U);
-				arm_add_q31(&y, &lmsErrBuff[i], &LOutBuff[i], 1U);
-				break;
-			case kOnlySignal:
-				// arm_scale_q31(&LInBuffScaledD[i], FLOAT_TO_Q31(0.9f), 1U, pTx, 1U);
-				arm_scale_q31(&lmsErrBuff[i], FLOAT_TO_Q31(0.9f), 1U, &LOutBuff[i], 1U);
-				break;
-			case kOnlyDelay:
-				// arm_scale_q31(&y, FLOAT_TO_Q31(0.9f), 1U, pTx, 1U);
-				arm_scale_q31(&y, FLOAT_TO_Q31(0.9f), 1U, &LOutBuff[i], 1U);
-				break;
-			// mimo que kHomogeneousMix??
-			default:
-				// arm_add_q31(&y, &LInBuffScaledD[i], pTx, 1U);
-				arm_add_q31(&y, &lmsErrBuff[i], &LOutBuff[i], 1U);
-				break;
+		case kHomogeneousMix:
+			arm_add_q31(&y, &LInBuffScaledD[i], pTx, 1U);
+			break;
+		case kOnlySignal:
+			arm_scale_q31(&LInBuffScaledD[i], FLOAT_TO_Q31(0.9f), 1U, pTx, 1U);
+			break;
+		case kOnlyDelay:
+			arm_scale_q31(&y, FLOAT_TO_Q31(0.9f), 1U, pTx, 1U);
+			break;
+		default:
+			arm_add_q31(&y, &LInBuffScaledD[i], pTx, 1U);
+			break;
 		}
 
 		/* Copy L samples in R channel */
-		// arm_copy_q31(pTx, (pTx + 1), 1U);
-		arm_copy_q31(&LOutBuff[i], (pTx), 1U);
-		arm_copy_q31(&LOutBuff[i], (pTx+1), 1U);
-		pTx = pTx + 2;	
-		// copiar 2 y dejar incrementado	
-		// for(uint8_t j=0;j<2;j++){
-		// 	*pTx = LOutBuff[i];
-		// 	pTx++;
-		// }
+		arm_copy_q31(pTx, (pTx + 1), 1U);
+		pTx = pTx + 2;
 
 		/* Increment the pointers and wrap if necessary */
 		writeIndex++;
@@ -572,4 +517,3 @@ void GPIOA_IRQHANDLER(void) {
     __DSB();
   #endif
 }
-
